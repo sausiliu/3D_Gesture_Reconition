@@ -3,7 +3,7 @@
 <title>Static Call Graph - [..\..\Output\RTOSDemo.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image ..\..\Output\RTOSDemo.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5040049: Last Updated: Fri Dec 25 15:13:17 2015
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5040049: Last Updated: Fri Dec 25 15:19:57 2015
 <BR><P>
 <H3>Maximum Stack Usage =        232 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -155,7 +155,7 @@ Global Symbols
 <P><STRONG><a name="[6]"></a>vPortSVCHandler</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, port.o(.emb_text))
 <BR>[Address Reference Count : 1]<UL><LI> stm32f10x.o(RESET)
 </UL>
-<P><STRONG><a name="[126]"></a>__asm___6_port_c_39a90d8d__prvStartFirstTask</STRONG> (Thumb, 28 bytes, Stack size 0 bytes, port.o(.emb_text))
+<P><STRONG><a name="[127]"></a>__asm___6_port_c_39a90d8d__prvStartFirstTask</STRONG> (Thumb, 28 bytes, Stack size 0 bytes, port.o(.emb_text))
 <BR><BR>[Called By]<UL><LI><a href="#[10a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xPortStartScheduler
 </UL>
 
@@ -2113,19 +2113,49 @@ Global Symbols
 
 <P><STRONG><a name="[1cd]"></a>xQueueIsQueueFullFromISR</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, queue.o(.text), UNUSED)
 
+<P><STRONG><a name="[ee]"></a>pvPortMalloc</STRONG> (Thumb, 166 bytes, Stack size 24 bytes, heap_2.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = pvPortMalloc &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
+</UL>
+<BR>[Calls]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
+<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskSuspendAll
+<LI><a href="#[125]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvHeapInit
+</UL>
+<BR>[Called By]<UL><LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vStartSemaphoreTasks
+<LI><a href="#[d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vStartBlockingQueueTasks
+<LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCreateSuicidalTasks
+<LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericCreate
+<LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAllocateTCBAndStack
+</UL>
+
+<P><STRONG><a name="[f3]"></a>vPortFree</STRONG> (Thumb, 56 bytes, Stack size 16 bytes, heap_2.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = vPortFree &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
+</UL>
+<BR>[Calls]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
+<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskSuspendAll
+</UL>
+<BR>[Called By]<UL><LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCreateTasks
+<LI><a href="#[124]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vQueueDelete
+<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvDeleteTCB
+<LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAllocateTCBAndStack
+</UL>
+
+<P><STRONG><a name="[1ce]"></a>xPortGetFreeHeapSize</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, heap_2.o(.text), UNUSED)
+
+<P><STRONG><a name="[1cf]"></a>vPortInitialiseBlocks</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, heap_2.o(.text), UNUSED)
+
 <P><STRONG><a name="[fb]"></a>pxPortInitialiseStack</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, port.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGenericCreate
 </UL>
 
-<P><STRONG><a name="[125]"></a>vPortSetupTimerInterrupt</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, port.o(.text))
+<P><STRONG><a name="[126]"></a>vPortSetupTimerInterrupt</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, port.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[10a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xPortStartScheduler
 </UL>
 
 <P><STRONG><a name="[10a]"></a>xPortStartScheduler</STRONG> (Thumb, 42 bytes, Stack size 8 bytes, port.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = xPortStartScheduler
 </UL>
-<BR>[Calls]<UL><LI><a href="#[125]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortSetupTimerInterrupt
-<LI><a href="#[126]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__asm___6_port_c_39a90d8d__prvStartFirstTask
+<BR>[Calls]<UL><LI><a href="#[126]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vPortSetupTimerInterrupt
+<LI><a href="#[127]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__asm___6_port_c_39a90d8d__prvStartFirstTask
 </UL>
 <BR>[Called By]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskStartScheduler
 </UL>
@@ -2228,36 +2258,6 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> stm32f10x.o(RESET)
 </UL>
-<P><STRONG><a name="[ee]"></a>pvPortMalloc</STRONG> (Thumb, 166 bytes, Stack size 24 bytes, heap_2.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = pvPortMalloc &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
-</UL>
-<BR>[Calls]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
-<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskSuspendAll
-<LI><a href="#[127]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvHeapInit
-</UL>
-<BR>[Called By]<UL><LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vStartSemaphoreTasks
-<LI><a href="#[d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vStartBlockingQueueTasks
-<LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCreateSuicidalTasks
-<LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericCreate
-<LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAllocateTCBAndStack
-</UL>
-
-<P><STRONG><a name="[f3]"></a>vPortFree</STRONG> (Thumb, 56 bytes, Stack size 16 bytes, heap_2.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = vPortFree &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
-</UL>
-<BR>[Calls]<UL><LI><a href="#[a2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskResumeAll
-<LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vTaskSuspendAll
-</UL>
-<BR>[Called By]<UL><LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vCreateTasks
-<LI><a href="#[124]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;vQueueDelete
-<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvDeleteTCB
-<LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvAllocateTCBAndStack
-</UL>
-
-<P><STRONG><a name="[1ce]"></a>xPortGetFreeHeapSize</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, heap_2.o(.text), UNUSED)
-
-<P><STRONG><a name="[1cf]"></a>vPortInitialiseBlocks</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, heap_2.o(.text), UNUSED)
-
 <P><STRONG><a name="[11e]"></a>__aeabi_memcpy</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, memcpya.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[121]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCopyDataFromQueue
 <LI><a href="#[11d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvCopyDataToQueue
@@ -2671,15 +2671,15 @@ Local Symbols
 <LI><a href="#[122]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueuePeekFromISR
 </UL>
 
+<P><STRONG><a name="[125]"></a>prvHeapInit</STRONG> (Thumb, 42 bytes, Stack size 0 bytes, heap_2.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pvPortMalloc
+</UL>
+
 <P><STRONG><a name="[47]"></a>prvTaskExitError</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, port.o(.text))
 <BR><BR>[Calls]<UL><LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ulPortSetInterruptMask
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> port.o(.text)
 </UL>
-<P><STRONG><a name="[127]"></a>prvHeapInit</STRONG> (Thumb, 42 bytes, Stack size 0 bytes, heap_2.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pvPortMalloc
-</UL>
-
 <P><STRONG><a name="[12a]"></a>_printf_core</STRONG> (Thumb, 336 bytes, Stack size 88 bytes, printf1.o(i._printf_core), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[12c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uidivmod
 </UL>

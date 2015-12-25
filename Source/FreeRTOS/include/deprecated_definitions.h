@@ -191,7 +191,7 @@ projects should not use them. */
 #endif
 
 #ifdef RVDS_ARMCM3_LM3S102
-	#include "../../Source/portable/RVDS/ARM_CM3/portmacro.h"
+	#include "../../Source/FreeRTOS/portable/RVDS/ARM_CM3/portmacro.h"
 #endif
 
 #ifdef GCC_ARMCM3_LM3S102

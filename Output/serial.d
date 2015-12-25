@@ -1,15 +1,15 @@
 ..\..\output\serial.o: serial\serial.c
-..\..\output\serial.o: ..\..\Source\include\FreeRTOS.h
+..\..\output\serial.o: ..\..\Source\FreeRTOS\include\FreeRTOS.h
 ..\..\output\serial.o: E:\Program Files\Keil_v5\ARM\ARMCC\bin\..\include\stddef.h
 ..\..\output\serial.o: E:\Program Files\Keil_v5\ARM\ARMCC\bin\..\include\stdint.h
 ..\..\output\serial.o: ..\CORTEX_STM32F103_Keil\FreeRTOSConfig.h
-..\..\output\serial.o: ..\..\Source\include\projdefs.h
-..\..\output\serial.o: ..\..\Source\include\portable.h
-..\..\output\serial.o: ..\..\Source\include\deprecated_definitions.h
-..\..\output\serial.o: ..\..\Source\include\../../Source/portable/RVDS/ARM_CM3/portmacro.h
-..\..\output\serial.o: ..\..\Source\include\mpu_wrappers.h
-..\..\output\serial.o: ..\..\Source\include\queue.h
-..\..\output\serial.o: ..\..\Source\include\semphr.h
+..\..\output\serial.o: ..\..\Source\FreeRTOS\include\projdefs.h
+..\..\output\serial.o: ..\..\Source\FreeRTOS\include\portable.h
+..\..\output\serial.o: ..\..\Source\FreeRTOS\include\deprecated_definitions.h
+..\..\output\serial.o: ..\CORTEX_STM32F103_Keil\../../Source/FreeRTOS/portable/RVDS/ARM_CM3/portmacro.h
+..\..\output\serial.o: ..\..\Source\FreeRTOS\include\mpu_wrappers.h
+..\..\output\serial.o: ..\..\Source\FreeRTOS\include\queue.h
+..\..\output\serial.o: ..\..\Source\FreeRTOS\include\semphr.h
 ..\..\output\serial.o: .\STM32F10xFWLib\inc\stm32f10x_lib.h
 ..\..\output\serial.o: .\STM32F10xFWLib\inc\stm32f10x_map.h
 ..\..\output\serial.o: ..\CORTEX_STM32F103_Keil\stm32f10x_conf.h

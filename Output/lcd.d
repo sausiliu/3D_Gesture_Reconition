@@ -13,14 +13,14 @@
 ..\..\output\lcd.o: .\STM32F10xFWLib\inc\stm32f10x_systick.h
 ..\..\output\lcd.o: .\STM32F10xFWLib\inc\stm32f10x_usart.h
 ..\..\output\lcd.o: .\STM32F10xFWLib\inc\spi_flash.h
-..\..\output\lcd.o: ..\..\Source\include\FreeRTOS.h
+..\..\output\lcd.o: ..\..\Source\FreeRTOS\include\FreeRTOS.h
 ..\..\output\lcd.o: E:\Program Files\Keil_v5\ARM\ARMCC\bin\..\include\stddef.h
 ..\..\output\lcd.o: E:\Program Files\Keil_v5\ARM\ARMCC\bin\..\include\stdint.h
 ..\..\output\lcd.o: ..\CORTEX_STM32F103_Keil\FreeRTOSConfig.h
-..\..\output\lcd.o: ..\..\Source\include\projdefs.h
-..\..\output\lcd.o: ..\..\Source\include\portable.h
-..\..\output\lcd.o: ..\..\Source\include\deprecated_definitions.h
-..\..\output\lcd.o: ..\..\Source\include\../../Source/portable/RVDS/ARM_CM3/portmacro.h
-..\..\output\lcd.o: ..\..\Source\include\mpu_wrappers.h
-..\..\output\lcd.o: ..\..\Source\include\task.h
-..\..\output\lcd.o: ..\..\Source\include\list.h
+..\..\output\lcd.o: ..\..\Source\FreeRTOS\include\projdefs.h
+..\..\output\lcd.o: ..\..\Source\FreeRTOS\include\portable.h
+..\..\output\lcd.o: ..\..\Source\FreeRTOS\include\deprecated_definitions.h
+..\..\output\lcd.o: ..\CORTEX_STM32F103_Keil\../../Source/FreeRTOS/portable/RVDS/ARM_CM3/portmacro.h
+..\..\output\lcd.o: ..\..\Source\FreeRTOS\include\mpu_wrappers.h
+..\..\output\lcd.o: ..\..\Source\FreeRTOS\include\task.h
+..\..\output\lcd.o: ..\..\Source\FreeRTOS\include\list.h

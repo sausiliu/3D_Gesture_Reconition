@@ -1,17 +1,17 @@
 ..\..\output\main.o: main.c
 ..\..\output\main.o: E:\Program Files\Keil_v5\ARM\ARMCC\bin\..\include\stdio.h
-..\..\output\main.o: ..\..\Source\include\FreeRTOS.h
+..\..\output\main.o: ..\..\Source\FreeRTOS\include\FreeRTOS.h
 ..\..\output\main.o: E:\Program Files\Keil_v5\ARM\ARMCC\bin\..\include\stddef.h
 ..\..\output\main.o: E:\Program Files\Keil_v5\ARM\ARMCC\bin\..\include\stdint.h
 ..\..\output\main.o: ..\CORTEX_STM32F103_Keil\FreeRTOSConfig.h
-..\..\output\main.o: ..\..\Source\include\projdefs.h
-..\..\output\main.o: ..\..\Source\include\portable.h
-..\..\output\main.o: ..\..\Source\include\deprecated_definitions.h
-..\..\output\main.o: ..\..\Source\include\../../Source/portable/RVDS/ARM_CM3/portmacro.h
-..\..\output\main.o: ..\..\Source\include\mpu_wrappers.h
-..\..\output\main.o: ..\..\Source\include\task.h
-..\..\output\main.o: ..\..\Source\include\list.h
-..\..\output\main.o: ..\..\Source\include\queue.h
+..\..\output\main.o: ..\..\Source\FreeRTOS\include\projdefs.h
+..\..\output\main.o: ..\..\Source\FreeRTOS\include\portable.h
+..\..\output\main.o: ..\..\Source\FreeRTOS\include\deprecated_definitions.h
+..\..\output\main.o: ..\CORTEX_STM32F103_Keil\../../Source/FreeRTOS/portable/RVDS/ARM_CM3/portmacro.h
+..\..\output\main.o: ..\..\Source\FreeRTOS\include\mpu_wrappers.h
+..\..\output\main.o: ..\..\Source\FreeRTOS\include\task.h
+..\..\output\main.o: ..\..\Source\FreeRTOS\include\list.h
+..\..\output\main.o: ..\..\Source\FreeRTOS\include\queue.h
 ..\..\output\main.o: .\STM32F10xFWLib\inc\stm32f10x_it.h
 ..\..\output\main.o: .\STM32F10xFWLib\inc\stm32f10x_lib.h
 ..\..\output\main.o: .\STM32F10xFWLib\inc\stm32f10x_map.h

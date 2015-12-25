@@ -26,8 +26,8 @@
 "..\..\output\tasks.o"
 "..\..\output\list.o"
 "..\..\output\queue.o"
-"..\..\output\port.o"
 "..\..\output\heap_2.o"
+"..\..\output\port.o"
 --library_type=microlib --strict --scatter "..\..\Output\RTOSDemo.sct"
 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers
