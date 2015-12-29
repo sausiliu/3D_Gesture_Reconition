@@ -68,8 +68,6 @@
 #include "stm32f10x_it.h"
 
 /* Demo app includes. */
-#include "lcd.h"
-//#include "LCD_Message.h"
 #include "BlockQ.h"
 #include "death.h"
 #include "integer.h"
@@ -80,6 +78,7 @@
 #include "flash.h"
 #include "comtest2.h"
 #include "stm32f10x_usart.h"
+#include "serial.h"
 
 /* Task priorities. */
 #define mainQUEUE_POLL_PRIORITY				( tskIDLE_PRIORITY + 2 )
@@ -91,16 +90,6 @@
 #define mainCOM_TEST_PRIORITY				( tskIDLE_PRIORITY + 1 )
 #define mainINTEGER_TASK_PRIORITY           ( tskIDLE_PRIORITY )
 
-/* Constants related to the LCD. */
-#define mainMAX_LINE						( 240 )
-#define mainROW_INCREMENT					( 24 )
-#define mainMAX_COLUMN						( 20 )
-#define mainCOLUMN_START					( 319 )
-#define mainCOLUMN_INCREMENT 				( 16 )
-
-/* The maximum number of message that can be waiting for display at any one
-time. */
-#define mainLCD_QUEUE_SIZE					( 3 )
 
 /* The check task uses the sprintf function so requires a little more stack. */
 #define mainCHECK_TASK_STACK_SIZE			( configMINIMAL_STACK_SIZE + 50 )
@@ -145,13 +134,12 @@ int fputc( int ch, FILE *f );
  */
 static void vCheckTask( void *pvParameters );
 static void vLEDTask( void *pvParameters );
-void uart1_init(void);
-
 /*
  * Configures the timers and interrupts for the fast interrupt test as
  * described at the top of this file.
  */
 extern void vSetupTimerTest( void );
+extern signed portBASE_TYPE xSerialPutChar( xComPortHandle, signed char , TickType_t);
 
 /*-----------------------------------------------------------*/
 
@@ -168,8 +156,9 @@ int main( void )
 
     prvSetupHardware();
     vAltStartComTestTasks( mainCOM_TEST_PRIORITY, mainCOM_TEST_BAUD_RATE, mainCOM_TEST_LED );
+	
     xTaskCreate( vLEDTask, "led_test", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
-   xTaskCreate( vCheckTask, "Check", mainCHECK_TASK_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY, NULL );
+    xTaskCreate( vCheckTask, "Check", mainCHECK_TASK_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY, NULL );
 
     /* The suicide tasks must be created last as they need to know how many
     tasks were running prior to their creation in order to ascertain whether
@@ -190,36 +179,21 @@ int main( void )
 void vLEDTask(void * pvParameters)
 {
     volatile unsigned long ul;
-
     GPIO_InitTypeDef GPIO_InitStructure;
-	USART_InitTypeDef USART_InitStructure;
-	
+
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-
     GPIO_Init(GPIOA, &GPIO_InitStructure);
-	
-  USART_InitStructure.USART_BaudRate = 115200; /* 9600 Baud */
-  USART_InitStructure.USART_WordLength = USART_WordLength_9b;
-  USART_InitStructure.USART_StopBits = USART_StopBits_1;
-  USART_InitStructure.USART_Parity = USART_Parity_No ;
-  USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-  USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
-  USART_InitStructure.USART_Clock = USART_Clock_Disable;
-  USART_InitStructure.USART_CPOL = USART_CPOL_Low;
-  USART_InitStructure.USART_CPHA = USART_CPHA_1Edge;
-  USART_InitStructure.USART_LastBit = USART_LastBit_Disable;
-	
-
-	USART_Init(USART2, &USART_InitStructure);
 
     for(;;)
     {
-        GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_SET);
-				vTaskDelay(100);
+		//	DEBUG_PRINT(message);
+				printf("helooooo");
+			GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_SET);
+        vTaskDelay(100);
         GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_RESET);
-       	vTaskDelay(100);
+        vTaskDelay(100);
     }
 }
 
@@ -234,7 +208,7 @@ static void vCheckTask( void *pvParameters )
     extern unsigned short usMaxJitter;
 
     xLastExecutionTime = xTaskGetTickCount();
- //   xMessage.pcMessage = cPassMessage;
+//   xMessage.pcMessage = cPassMessage;
 
     for( ;; )
     {
@@ -245,49 +219,47 @@ static void vCheckTask( void *pvParameters )
 
         if( xAreBlockingQueuesStillRunning() != pdTRUE )
         {
- //           xMessage.pcMessage = "ERROR IN BLOCK Q\n";
+//           xMessage.pcMessage = "ERROR IN BLOCK Q\n";
+					printf("ERROR IN BLOCK Q\n");
         }
         else if( xAreBlockTimeTestTasksStillRunning() != pdTRUE )
         {
- //           xMessage.pcMessage = "ERROR IN BLOCK TIME\n";
+//           xMessage.pcMessage = "ERROR IN BLOCK TIME\n";
+					printf("ERROR IN BLOCK TIME\n");
         }
         else if( xAreSemaphoreTasksStillRunning() != pdTRUE )
         {
- //           xMessage.pcMessage = "ERROR IN SEMAPHORE\n";
+//           xMessage.pcMessage = "ERROR IN SEMAPHORE\n";
+					printf("ERROR IN SEMAPHORE\n");
         }
         else if( xArePollingQueuesStillRunning() != pdTRUE )
         {
- //           xMessage.pcMessage = "ERROR IN POLL Q\n";
+//           xMessage.pcMessage = "ERROR IN POLL Q\n";
+					printf("ERROR IN POLL Q\n");
         }
         else if( xIsCreateTaskStillRunning() != pdTRUE )
         {
-  //          xMessage.pcMessage = "ERROR IN CREATE\n";
+            //          xMessage.pcMessage = "ERROR IN CREATE\n";
+					printf("ERROR IN CREATE\n");
         }
         else if( xAreIntegerMathsTaskStillRunning() != pdTRUE )
         {
- //           xMessage.pcMessage = "ERROR IN MATH\n";
+//           xMessage.pcMessage = "ERROR IN MATH\n";
+					printf("ERROR IN MATH\n");
         }
         else if( xAreComTestTasksStillRunning() != pdTRUE )
         {
- //           xMessage.pcMessage = "ERROR IN COM TEST\n";
+//           xMessage.pcMessage = "ERROR IN COM TEST\n";
+							printf("ERROR IN COM TEST\n");
         }
         else
         {
             sprintf( ( char * ) cPassMessage, "PASS [%uns]\n", ( ( unsigned long ) usMaxJitter ) * mainNS_PER_CLOCK );
         }
 
-        /* Send the message to the LCD gatekeeper for display. */
- //       xQueueSend( xLCDQueue, &xMessage, portMAX_DELAY );
     }
 }
 /*-----------------------------------------------------------*/
-void uart1_init(void)
-{
-	USART_InitTypeDef USART_InitStructure;
-	
-	USART_Init(USART1, &USART_InitStructure);
-}
-
 
 static void prvSetupHardware( void )
 {
@@ -339,7 +311,7 @@ static void prvSetupHardware( void )
 
     /* SPI2 Periph clock enable */
     RCC_APB1PeriphClockCmd( RCC_APB1Periph_SPI2, ENABLE );
-	
+
 
     /* Set the Vector Table base address at 0x08000000 */
     NVIC_SetVectorTable( NVIC_VectTab_FLASH, 0x0 );
@@ -352,7 +324,14 @@ static void prvSetupHardware( void )
     vParTestInitialise();
 }
 
+
 /*-----------------------------------------------------------*/
+int fputc( int ch, FILE *f )
+{
+
+	xSerialPutChar(NULL, ch, 0);
+	return ch;
+}
 
 /*-----------------------------------------------------------*/
 

@@ -162,8 +162,8 @@ void vAltStartComTestTasks( UBaseType_t uxPriority, uint32_t ulBaudRate, UBaseTy
 	xSerialPortInitMinimal( ulBaudRate, comBUFFER_LEN );
 
 	/* The Tx task is spawned with a lower priority than the Rx task. */
-	xTaskCreate( vComTxTask, "COMTx", comSTACK_SIZE, NULL, uxPriority - 1, ( TaskHandle_t * ) NULL );
-	xTaskCreate( vComRxTask, "COMRx", comSTACK_SIZE, NULL, uxPriority, ( TaskHandle_t * ) NULL );
+//	xTaskCreate( vComTxTask, "COMTx", comSTACK_SIZE, NULL, uxPriority - 1, ( TaskHandle_t * ) NULL );
+//	xTaskCreate( vComRxTask, "COMRx", comSTACK_SIZE, NULL, uxPriority, ( TaskHandle_t * ) NULL );
 }
 /*-----------------------------------------------------------*/
 
