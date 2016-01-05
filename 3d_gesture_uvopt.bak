@@ -157,7 +157,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>/</Name>
+          <Name></Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -261,8 +261,8 @@
       <Focus>0</Focus>
       <ColumnNumber>19</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>278</TopLine>
-      <CurrentLine>287</CurrentLine>
+      <TopLine>0</TopLine>
+      <CurrentLine>0</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\Source\User\STM32F10xFWLib\src\stm32f10x_usart.c</PathWithFileName>
       <FilenameWithoutPath>stm32f10x_usart.c</FilenameWithoutPath>
@@ -325,8 +325,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>797</TopLine>
-      <CurrentLine>803</CurrentLine>
+      <TopLine>0</TopLine>
+      <CurrentLine>0</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\Source\User\STM32F10xFWLib\src\stm32f10x_rcc.c</PathWithFileName>
       <FilenameWithoutPath>stm32f10x_rcc.c</FilenameWithoutPath>
@@ -397,7 +397,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>2695</TopLine>
+      <TopLine>2720</TopLine>
       <CurrentLine>2721</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\Source\FreeRTOS\tasks.c</PathWithFileName>
@@ -411,10 +411,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>3</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>0</TopLine>
-      <CurrentLine>0</CurrentLine>
+      <TopLine>421</TopLine>
+      <CurrentLine>331</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\Source\FreeRTOS\queue.c</PathWithFileName>
       <FilenameWithoutPath>queue.c</FilenameWithoutPath>
@@ -485,8 +485,8 @@
       <Focus>0</Focus>
       <ColumnNumber>52</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>118</TopLine>
-      <CurrentLine>128</CurrentLine>
+      <TopLine>0</TopLine>
+      <CurrentLine>0</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\Source\User\ParTest\ParTest.c</PathWithFileName>
       <FilenameWithoutPath>ParTest.c</FilenameWithoutPath>
@@ -501,7 +501,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>204</TopLine>
+      <TopLine>36</TopLine>
       <CurrentLine>188</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\Source\User\serial\serial.c</PathWithFileName>
@@ -531,10 +531,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>65</ColumnNumber>
+      <ColumnNumber>22</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>154</TopLine>
-      <CurrentLine>177</CurrentLine>
+      <TopLine>224</TopLine>
+      <CurrentLine>247</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\Source\User\main.c</PathWithFileName>
       <FilenameWithoutPath>main.c</FilenameWithoutPath>

@@ -180,9 +180,9 @@ int main( void )
     vAltStartComTestTasks( mainCOM_TEST_PRIORITY, mainCOM_TEST_BAUD_RATE, mainCOM_TEST_LED );
 
     xTaskCreate( vUARTPrintTask, "uart_print", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
-    xTaskCreate( vLEDTask, "led_test", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
+   xTaskCreate( vLEDTask, "led_test", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
     xTaskCreate( vTask1, "task1", configMINIMAL_STACK_SIZE, NULL, 6, NULL );
-    xTaskCreate( vTask2, "task2", configMINIMAL_STACK_SIZE, NULL, 3, NULL );
+   xTaskCreate( vTask2, "task2", configMINIMAL_STACK_SIZE, NULL, 3, NULL );
     xTaskCreate( vCheckTask, "Check", mainCHECK_TASK_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY, NULL );
 
     /* The suicide tasks must be created last as they need to know how many
@@ -207,7 +207,7 @@ void vLEDTask(void * pvParameters)
     volatile unsigned long ul;
     xUARTMessage xMessage;
     GPIO_InitTypeDef GPIO_InitStructure;
-    xMessage.pcMessage = "hello world\n\r";
+//  xMessage.pcMessage = "hello\n\r";
 
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
@@ -216,8 +216,8 @@ void vLEDTask(void * pvParameters)
 
     for(;;)
     {
-				xSemaphoreTake(xSem1, portMAX_DELAY);
-        xQueueSend( xUARTQueue, &xMessage, portMAX_DELAY );
+//				xSemaphoreTake(xSem1, portMAX_DELAY);
+//        xQueueSend( xUARTQueue, &xMessage, portMAX_DELAY );
         GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_SET);
         vTaskDelay(100);
         GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_RESET);
@@ -230,9 +230,10 @@ static void vTask1( void *pvParameters )
 {
     xUARTMessage xMessage;
     xMessage.pcMessage = "11111111\n\r";
+	   xSemaphoreGive(xSem);
     for(;;)
     {
-        xSemaphoreGive(xSem);
+     
         xQueueSend( xUARTQueue, &xMessage, portMAX_DELAY );
         vTaskDelay(2000);
     }
@@ -246,8 +247,8 @@ static void vTask2( void *pvParameters )
     {
         xSemaphoreTake(xSem, portMAX_DELAY);
         xQueueSend( xUARTQueue, &xMessage, portMAX_DELAY );
-			xSemaphoreGive(xSem1);
-        vTaskDelay(100);
+//			xSemaphoreGive(xSem1);
+//        vTaskDelay(100);
     }
 }
 /*-----------------------------------------------------------*/

@@ -157,7 +157,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name></Name>
+          <Name>/</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -230,7 +230,7 @@
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
       <TopLine>111</TopLine>
-      <CurrentLine>136</CurrentLine>
+      <CurrentLine>122</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\Source\User\STM32F10x.s</PathWithFileName>
       <FilenameWithoutPath>STM32F10x.s</FilenameWithoutPath>
@@ -395,10 +395,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>34</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>2697</TopLine>
-      <CurrentLine>2702</CurrentLine>
+      <TopLine>2604</TopLine>
+      <CurrentLine>2698</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\Source\FreeRTOS\tasks.c</PathWithFileName>
       <FilenameWithoutPath>tasks.c</FilenameWithoutPath>
@@ -411,10 +411,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>13</ColumnNumber>
+      <ColumnNumber>3</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>304</TopLine>
-      <CurrentLine>313</CurrentLine>
+      <TopLine>421</TopLine>
+      <CurrentLine>331</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\Source\FreeRTOS\queue.c</PathWithFileName>
       <FilenameWithoutPath>queue.c</FilenameWithoutPath>
@@ -501,7 +501,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>204</TopLine>
+      <TopLine>36</TopLine>
       <CurrentLine>188</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\Source\User\serial\serial.c</PathWithFileName>
@@ -533,8 +533,8 @@
       <Focus>0</Focus>
       <ColumnNumber>2</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>164</TopLine>
-      <CurrentLine>176</CurrentLine>
+      <TopLine>235</TopLine>
+      <CurrentLine>250</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\Source\User\main.c</PathWithFileName>
       <FilenameWithoutPath>main.c</FilenameWithoutPath>
