@@ -79,6 +79,9 @@
 #include "comtest2.h"
 #include "stm32f10x_usart.h"
 #include "serial.h"
+#include "semphr.h"
+
+
 
 /* Task priorities. */
 #define mainQUEUE_POLL_PRIORITY				( tskIDLE_PRIORITY + 2 )
@@ -95,7 +98,7 @@
 #define mainCHECK_TASK_STACK_SIZE			( configMINIMAL_STACK_SIZE + 50 )
 
 /* Dimensions the buffer into which the jitter time is written. */
-#define mainMAX_MSG_LEN						25
+#define mainMAX_MSG_LEN						100
 
 /* The time between cycles of the 'check' task. */
 #define mainCHECK_DELAY						( ( TickType_t ) 5000 / portTICK_PERIOD_MS )
@@ -109,6 +112,10 @@
 /* The LED used by the comtest tasks. See the comtest.c file for more
 information. */
 #define mainCOM_TEST_LED			( 3 )
+
+/* The maximum number of message that can be waiting for uart at any one
+time. */
+#define mainUART_QUEUE_SIZE					( 10 )
 
 /*-----------------------------------------------------------*/
 
@@ -134,6 +141,13 @@ int fputc( int ch, FILE *f );
  */
 static void vCheckTask( void *pvParameters );
 static void vLEDTask( void *pvParameters );
+static void vUARTPrintTask( void *pvParameters );
+static void vSendUARTTask( void *pvParameters );
+static void vTask1( void *pvParameters );
+static void vTask2( void *pvParameters );
+
+
+
 /*
  * Configures the timers and interrupts for the fast interrupt test as
  * described at the top of this file.
@@ -143,8 +157,10 @@ extern signed portBASE_TYPE xSerialPutChar( xComPortHandle, signed char , TickTy
 
 /*-----------------------------------------------------------*/
 
-/* The queue used to send messages to the LCD task. */
-QueueHandle_t xLCDQueue;
+/* The queue used to send messages to the uart task. */
+QueueHandle_t xUARTQueue;
+
+xSemaphoreHandle xSem, xSem1;
 
 /*-----------------------------------------------------------*/
 
@@ -154,10 +170,19 @@ int main( void )
     debug();
 #endif
 
+    /* Create the queue used by the uart task.  Messages for display on the uart1
+    are received via this queue. */
+    xUARTQueue = xQueueCreate( mainUART_QUEUE_SIZE, sizeof( xUARTMessage ) );
+    xSem = xSemaphoreCreateBinary();
+    xSem1	= xSemaphoreCreateBinary();
+    //xSemaphoreCreateCounting(1, 0);
     prvSetupHardware();
     vAltStartComTestTasks( mainCOM_TEST_PRIORITY, mainCOM_TEST_BAUD_RATE, mainCOM_TEST_LED );
 
+    xTaskCreate( vUARTPrintTask, "uart_print", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
     xTaskCreate( vLEDTask, "led_test", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
+    xTaskCreate( vTask1, "task1", configMINIMAL_STACK_SIZE, NULL, 6, NULL );
+    xTaskCreate( vTask2, "task2", configMINIMAL_STACK_SIZE, NULL, 3, NULL );
     xTaskCreate( vCheckTask, "Check", mainCHECK_TASK_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY, NULL );
 
     /* The suicide tasks must be created last as they need to know how many
@@ -176,10 +201,13 @@ int main( void )
     return 0;
 }
 /*-----------------------test-------------------------------*/
+
 void vLEDTask(void * pvParameters)
 {
     volatile unsigned long ul;
+    xUARTMessage xMessage;
     GPIO_InitTypeDef GPIO_InitStructure;
+    xMessage.pcMessage = "hello world\n\r";
 
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
@@ -188,8 +216,8 @@ void vLEDTask(void * pvParameters)
 
     for(;;)
     {
-        //	DEBUG_PRINT(message);
-        printf("helooooo");
+				xSemaphoreTake(xSem1, portMAX_DELAY);
+        xQueueSend( xUARTQueue, &xMessage, portMAX_DELAY );
         GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_SET);
         vTaskDelay(100);
         GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_RESET);
@@ -197,18 +225,54 @@ void vLEDTask(void * pvParameters)
     }
 }
 
-
 /*-----------------------------------------------------------*/
+static void vTask1( void *pvParameters )
+{
+    xUARTMessage xMessage;
+    xMessage.pcMessage = "11111111\n\r";
+    for(;;)
+    {
+        xSemaphoreGive(xSem);
+        xQueueSend( xUARTQueue, &xMessage, portMAX_DELAY );
+        vTaskDelay(2000);
+    }
+}
+/*-----------------------------------------------------------*/
+static void vTask2( void *pvParameters )
+{
+    xUARTMessage xMessage;
+    xMessage.pcMessage = "22222222\n\r";
+    for(;;)
+    {
+        xSemaphoreTake(xSem, portMAX_DELAY);
+        xQueueSend( xUARTQueue, &xMessage, portMAX_DELAY );
+			xSemaphoreGive(xSem1);
+        vTaskDelay(100);
+    }
+}
+/*-----------------------------------------------------------*/
+
+void vUARTPrintTask( void *pvParameters )
+{
+    xUARTMessage xMessage;
+
+    for( ;; )
+    {
+        while( xQueueReceive( xUARTQueue, &xMessage, portMAX_DELAY ) != pdPASS );
+        printf( ( char const * ) xMessage.pcMessage );
+    }
+}
+
 
 static void vCheckTask( void *pvParameters )
 {
     TickType_t xLastExecutionTime;
-//    xLCDMessage xMessage;
+    xUARTMessage xMessage;
     static signed char cPassMessage[ mainMAX_MSG_LEN ];
     extern unsigned short usMaxJitter;
 
     xLastExecutionTime = xTaskGetTickCount();
-//   xMessage.pcMessage = cPassMessage;
+    xMessage.pcMessage = cPassMessage;
 
     for( ;; )
     {
@@ -219,37 +283,38 @@ static void vCheckTask( void *pvParameters )
 
         if( xAreBlockingQueuesStillRunning() != pdTRUE )
         {
-            printf("ERROR IN BLOCK Q\n");
+            xMessage.pcMessage = "ERROR IN BLOCK Q\n";
         }
         else if( xAreBlockTimeTestTasksStillRunning() != pdTRUE )
         {
-            printf("ERROR IN BLOCK TIME\n");
+            xMessage.pcMessage = "ERROR IN BLOCK TIME\n";
         }
         else if( xAreSemaphoreTasksStillRunning() != pdTRUE )
         {
-            printf("ERROR IN SEMAPHORE\n");
+            xMessage.pcMessage = "ERROR IN SEMAPHORE\n";
         }
         else if( xArePollingQueuesStillRunning() != pdTRUE )
         {
-            printf("ERROR IN POLL Q\n");
+            xMessage.pcMessage = "ERROR IN POLL Q\n";
         }
         else if( xIsCreateTaskStillRunning() != pdTRUE )
         {
-            printf("ERROR IN CREATE\n");
+            xMessage.pcMessage = "ERROR IN CREATE\n";
         }
         else if( xAreIntegerMathsTaskStillRunning() != pdTRUE )
         {
-            printf("ERROR IN MATH\n");
+            xMessage.pcMessage = "ERROR IN MATH\n";
         }
         else if( xAreComTestTasksStillRunning() != pdTRUE )
         {
-            printf("ERROR IN COM TEST\n");
+            xMessage.pcMessage = "ERROR IN COM TEST\n";
         }
         else
         {
             sprintf( ( char * ) cPassMessage, "PASS [%uns]\n", ( ( unsigned long ) usMaxJitter ) * mainNS_PER_CLOCK );
         }
-
+        /* Send the message to the LCD gatekeeper for display. */
+        xQueueSend( xUARTQueue, &xMessage, portMAX_DELAY );
     }
 }
 /*-----------------------------------------------------------*/
@@ -304,7 +369,6 @@ static void prvSetupHardware( void )
 
     /* SPI2 Periph clock enable */
     RCC_APB1PeriphClockCmd( RCC_APB1Periph_SPI2, ENABLE );
-
 
     /* Set the Vector Table base address at 0x08000000 */
     NVIC_SetVectorTable( NVIC_VectTab_FLASH, 0x0 );

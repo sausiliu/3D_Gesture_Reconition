@@ -388,8 +388,8 @@ typedef QueueHandle_t SemaphoreHandle_t;
  void vATask( void * pvParameters )
  {
     // Create the semaphore to guard a shared resource.
-    vSemaphoreCreateBinary( xSemaphore );
-
+   // vSemaphoreCreateBinary( xSemaphore );
+		xSemaphore = xSemaphoreCreateBinary();
     if( xSemaphore != NULL )
     {
         if( xSemaphoreGive( xSemaphore ) != pdTRUE )

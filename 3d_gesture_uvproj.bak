@@ -410,11 +410,6 @@
               <FilePath>.\Source\User\STM32F10x.s</FilePath>
             </File>
             <File>
-              <FileName>lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\Common\drivers\ST\STM32F10xFWLib\src\lcd.c</FilePath>
-            </File>
-            <File>
               <FileName>cortexm3_macro_rvds.s</FileName>
               <FileType>2</FileType>
               <FilePath>.\Source\Common\drivers\ST\STM32F10xFWLib\src\cortexm3_macro_rvds.s</FilePath>
