@@ -2,13 +2,6 @@
     FreeRTOS V8.2.3 - Copyright (C) 2015 Real Time Engineers Ltd.
     All rights reserved
 
-    ***************************************************************************
-    >>!   NOTE: The modification to the GPL is included to allow you to     !<<
-    >>!   distribute a combined work that includes FreeRTOS without being   !<<
-    >>!   obliged to provide the source code for proprietary components     !<<
-    >>!   outside of the FreeRTOS kernel.                                   !<<
-    ***************************************************************************
-
     FreeRTOS is distributed in the hope that it will be useful, but WITHOUT ANY
     WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
     FOR A PARTICULAR PURPOSE.  Full license text is available on the following
@@ -84,14 +77,14 @@
 
 
 /* Task priorities. */
-#define mainQUEUE_POLL_PRIORITY				( tskIDLE_PRIORITY + 2 )
-#define mainCHECK_TASK_PRIORITY				( tskIDLE_PRIORITY + 3 )
-#define mainSEM_TEST_PRIORITY				( tskIDLE_PRIORITY + 1 )
-#define mainBLOCK_Q_PRIORITY				( tskIDLE_PRIORITY + 2 )
-#define mainCREATOR_TASK_PRIORITY           ( tskIDLE_PRIORITY + 3 )
-#define mainFLASH_TASK_PRIORITY				( tskIDLE_PRIORITY + 1 )
-#define mainCOM_TEST_PRIORITY				( tskIDLE_PRIORITY + 1 )
-#define mainINTEGER_TASK_PRIORITY           ( tskIDLE_PRIORITY )
+#define mainQUEUE_POLL_PRIORITY					( tskIDLE_PRIORITY + 2 )
+#define mainCHECK_TASK_PRIORITY					( tskIDLE_PRIORITY + 3 )
+#define mainSEM_TEST_PRIORITY						( tskIDLE_PRIORITY + 1 )
+#define mainBLOCK_Q_PRIORITY						( tskIDLE_PRIORITY + 2 )
+#define mainCREATOR_TASK_PRIORITY       ( tskIDLE_PRIORITY + 3 )
+#define mainFLASH_TASK_PRIORITY					( tskIDLE_PRIORITY + 1 )
+#define mainCOM_TEST_PRIORITY						( tskIDLE_PRIORITY + 1 )
+#define mainINTEGER_TASK_PRIORITY       ( tskIDLE_PRIORITY )
 
 
 /* The check task uses the sprintf function so requires a little more stack. */
@@ -142,7 +135,6 @@ int fputc( int ch, FILE *f );
 static void vCheckTask( void *pvParameters );
 static void vLEDTask( void *pvParameters );
 static void vUARTPrintTask( void *pvParameters );
-static void vSendUARTTask( void *pvParameters );
 static void vTask1( void *pvParameters );
 static void vTask2( void *pvParameters );
 
@@ -175,14 +167,22 @@ int main( void )
     xUARTQueue = xQueueCreate( mainUART_QUEUE_SIZE, sizeof( xUARTMessage ) );
     xSem = xSemaphoreCreateBinary();
     xSem1	= xSemaphoreCreateBinary();
-    //xSemaphoreCreateCounting(1, 0);
     prvSetupHardware();
+
+
+    /* Start the standard demo tasks. */
+    vStartBlockingQueueTasks( mainBLOCK_Q_PRIORITY );
+    vCreateBlockTimeTasks();
+    vStartSemaphoreTasks( mainSEM_TEST_PRIORITY );
+    vStartPolledQueueTasks( mainQUEUE_POLL_PRIORITY );
+    vStartIntegerMathTasks( mainINTEGER_TASK_PRIORITY );
+
     vAltStartComTestTasks( mainCOM_TEST_PRIORITY, mainCOM_TEST_BAUD_RATE, mainCOM_TEST_LED );
 
     xTaskCreate( vUARTPrintTask, "uart_print", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
-   xTaskCreate( vLEDTask, "led_test", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
+    xTaskCreate( vLEDTask, "led_test", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
     xTaskCreate( vTask1, "task1", configMINIMAL_STACK_SIZE, NULL, 6, NULL );
-   xTaskCreate( vTask2, "task2", configMINIMAL_STACK_SIZE, NULL, 3, NULL );
+    xTaskCreate( vTask2, "task2", configMINIMAL_STACK_SIZE, NULL, 6, NULL );
     xTaskCreate( vCheckTask, "Check", mainCHECK_TASK_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY, NULL );
 
     /* The suicide tasks must be created last as they need to know how many
@@ -204,10 +204,7 @@ int main( void )
 
 void vLEDTask(void * pvParameters)
 {
-    volatile unsigned long ul;
-    xUARTMessage xMessage;
     GPIO_InitTypeDef GPIO_InitStructure;
-//  xMessage.pcMessage = "hello\n\r";
 
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
@@ -216,8 +213,6 @@ void vLEDTask(void * pvParameters)
 
     for(;;)
     {
-//				xSemaphoreTake(xSem1, portMAX_DELAY);
-//        xQueueSend( xUARTQueue, &xMessage, portMAX_DELAY );
         GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_SET);
         vTaskDelay(100);
         GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_RESET);
@@ -230,10 +225,10 @@ static void vTask1( void *pvParameters )
 {
     xUARTMessage xMessage;
     xMessage.pcMessage = "11111111\n\r";
-	   xSemaphoreGive(xSem);
+    xSemaphoreGive(xSem);
     for(;;)
     {
-     
+
         xQueueSend( xUARTQueue, &xMessage, portMAX_DELAY );
         vTaskDelay(2000);
     }
@@ -245,10 +240,10 @@ static void vTask2( void *pvParameters )
     xMessage.pcMessage = "22222222\n\r";
     for(;;)
     {
-        xSemaphoreTake(xSem, portMAX_DELAY);
+//        xSemaphoreTake(xSem, portMAX_DELAY);
         xQueueSend( xUARTQueue, &xMessage, portMAX_DELAY );
 //			xSemaphoreGive(xSem1);
-//        vTaskDelay(100);
+        vTaskDelay(2000);
     }
 }
 /*-----------------------------------------------------------*/
@@ -306,10 +301,10 @@ static void vCheckTask( void *pvParameters )
         {
             xMessage.pcMessage = "ERROR IN MATH\n";
         }
-        else if( xAreComTestTasksStillRunning() != pdTRUE )
-        {
-            xMessage.pcMessage = "ERROR IN COM TEST\n";
-        }
+//        else if( xAreComTestTasksStillRunning() != pdTRUE )
+//        {
+//            xMessage.pcMessage = "ERROR IN COM TEST\n";
+//        }
         else
         {
             sprintf( ( char * ) cPassMessage, "PASS [%uns]\n", ( ( unsigned long ) usMaxJitter ) * mainNS_PER_CLOCK );
@@ -386,7 +381,6 @@ static void prvSetupHardware( void )
 /*-----------------------------------------------------------*/
 int fputc( int ch, FILE *f )
 {
-
     xSerialPutChar(NULL, ch, 0);
     return ch;
 }
