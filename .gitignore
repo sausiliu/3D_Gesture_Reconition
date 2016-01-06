@@ -1,3 +1,11 @@
+#####################
+#   .gitignore
+#####################
+
+!.gitignore
+Output/
+Lists/
+
 #################
 ## Eclipse
 #################
@@ -5,8 +13,7 @@
 *.pydevproject
 .project
 .metadata
-bin/
-tmp/
+
 *.tmp
 *.bak
 *.swp
@@ -215,6 +222,3 @@ pip-log.txt
 _site/
 session.vim
 
-Output/
-List/
-Crazepony.uvgui.Administrator
