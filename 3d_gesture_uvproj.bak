@@ -457,6 +457,9 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>driver</GroupName>
+        </Group>
+        <Group>
           <GroupName>FreeRTOS files</GroupName>
           <Files>
             <File>
