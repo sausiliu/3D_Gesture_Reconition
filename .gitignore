@@ -3,6 +3,11 @@
 #####################
 
 !.gitignore
+!Lists/readme.txt
+!Output/readme.txt
+Lists/*
+Output/*
+
 
 #################
 ## Eclipse
