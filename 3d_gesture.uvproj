@@ -504,6 +504,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\User\driver\src\i2c\i2c.c</FilePath>
             </File>
+            <File>
+              <FileName>inv_mpu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\User\driver\src\sensor\inv_mpu.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -568,6 +573,11 @@
               <FileName>PollQ.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\Common\Minimal\PollQ.c</FilePath>
+            </File>
+            <File>
+              <FileName>mpu9150.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\User\mpu9150.c</FilePath>
             </File>
           </Files>
         </Group>

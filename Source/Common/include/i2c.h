@@ -9,7 +9,7 @@ Purpose :
 #define SENSORS_I2C               I2C2
 
 #define I2C_SPEED                 400000
-#define I2C_OWN_ADDRESS           0x00
+#define I2C_OWN_ADDRESS           0x30
 
 #define I2C_Config() I2cMaster_Init();
 

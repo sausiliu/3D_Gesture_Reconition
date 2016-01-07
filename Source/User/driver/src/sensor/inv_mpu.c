@@ -56,7 +56,10 @@
 #define i2c_write   Sensors_I2C_WriteRegister
 #define i2c_read    Sensors_I2C_ReadRegister
 #define delay_ms    mdelay
-#define get_ms      get_tick_count
+//#define get_ms      get_tick_count
+#define 	get_ms(time)\
+					*time = xTaskGetTickCount();
+					
 #define log_i       MPL_LOGI
 #define log_e       MPL_LOGE
 #define min(a,b) ((a<b)?a:b)
@@ -914,8 +917,8 @@ int mpu_get_gyro_reg(short *data, unsigned long *timestamp)
     data[0] = (tmp[0] << 8) | tmp[1];
     data[1] = (tmp[2] << 8) | tmp[3];
     data[2] = (tmp[4] << 8) | tmp[5];
-//    if (timestamp)
-//       get_ms(timestamp);
+    if (timestamp)
+       get_ms(timestamp);
     return 0;
 }
 
@@ -937,8 +940,8 @@ int mpu_get_accel_reg(short *data, unsigned long *timestamp)
     data[0] = (tmp[0] << 8) | tmp[1];
     data[1] = (tmp[2] << 8) | tmp[3];
     data[2] = (tmp[4] << 8) | tmp[5];
-//    if (timestamp)
-//        get_ms(timestamp);
+    if (timestamp)
+        get_ms(timestamp);
     return 0;
 }
 
@@ -959,8 +962,8 @@ int mpu_get_temperature(long *data, unsigned long *timestamp)
     if (i2c_read(st.hw->addr, st.reg->temp, 2, tmp))
         return -1;
     raw = (tmp[0] << 8) | tmp[1];
-//    if (timestamp)
-//        get_ms(timestamp);
+    if (timestamp)
+        get_ms(timestamp);
 
     data[0] = (long)((35 + ((raw - (float)st.hw->temp_offset) / st.hw->temp_sens)) * 65536L);
     return 0;
@@ -1814,7 +1817,7 @@ int mpu_read_fifo(short *gyro, short *accel, unsigned long *timestamp,
         }
     }
 //sausiliu
-//    get_ms((unsigned long*)timestamp);
+    get_ms((unsigned long*)timestamp);
 
     if (i2c_read(st.hw->addr, st.reg->fifo_r_w, packet_size, data))
         return -1;
@@ -3199,8 +3202,8 @@ int mpu_get_compass_reg(short *data, unsigned long *timestamp)
     data[1] = ((long)data[1] * st.chip_cfg.mag_sens_adj[1]) >> 8;
     data[2] = ((long)data[2] * st.chip_cfg.mag_sens_adj[2]) >> 8;
 //sausiliu don't the use of get_ms
-//    if (timestamp)
-//        get_ms(timestamp);
+    if (timestamp)
+        get_ms(timestamp);
     return 0;
 #else
     return -1;
