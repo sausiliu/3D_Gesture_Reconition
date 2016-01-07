@@ -28,6 +28,10 @@
 #define INV_XYZ_ACCEL   (0x08)
 #define INV_XYZ_COMPASS (0x01)
 
+#define EMPL_TARGET_STM32F4	1
+#define MPU9150			1
+
+
 struct int_param_s {
 #if defined EMPL_TARGET_MSP430 || defined MOTION_DRIVER_TARGET_MSP430
     void (*cb)(void);
