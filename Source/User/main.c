@@ -134,7 +134,7 @@ int fputc( int ch, FILE *f );
  * via a queue.
  */
 static void vCheckTask( void *pvParameters );
-static void vMPUReadTask( void *pvParameters );
+static void vMPUTask( void *pvParameters );
 static void vUARTPrintTask( void *pvParameters );
 
 
@@ -179,7 +179,7 @@ int main( void )
     vAltStartComTestTasks( mainCOM_TEST_PRIORITY, mainCOM_TEST_BAUD_RATE, mainCOM_TEST_LED );
 	
     xTaskCreate( vUARTPrintTask, "uart_print", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
-    xTaskCreate( vMPUReadTask, "mpu9150", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
+    xTaskCreate( vMPUTask, "mpu9150", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
     xTaskCreate( vCheckTask, "Check", mainCHECK_TASK_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY, NULL );
 
     /* The suicide tasks must be created last as they need to know how many
@@ -199,7 +199,7 @@ int main( void )
 }
 /*-----------------------test-------------------------------*/
 
-void vMPUReadTask(void * pvParameters)
+void vMPUTask(void * pvParameters)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
 
@@ -208,12 +208,13 @@ void vMPUReadTask(void * pvParameters)
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
+		MPU9150Init();
     for(;;)
     {
-        GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_SET);
-        vTaskDelay(100);
-        GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_RESET);
-        vTaskDelay(100);
+			GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_RESET);
+			vTaskDelay(100);
+			GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_SET);
+			vTaskDelay(100);
     }
 }
 
@@ -346,7 +347,7 @@ static void prvSetupHardware( void )
     SysTick_CLKSourceConfig( SysTick_CLKSource_HCLK );
 
     vParTestInitialise();
-		MPU9150Init();
+
 }
 
 int fputc( int ch, FILE *f )
