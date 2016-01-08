@@ -482,132 +482,164 @@ enum lp_accel_rate_e
 #endif
 
 #if defined MPU6050
-const struct gyro_reg_s reg =
-{
-    //who_am_i				rate_div				lpf						prod_id				user_ctrl	fifo_en
-    0x75,						0x19,						0x1A,					0x0C,					0x6A,			0x23,
-    //gyro_cfg				accel_cfg				motion_thr		motion_dur		fifo_count_h
-    0x1B,						0x1C,						0x1F,					0x20,					0x72,
-    //fifo_r_w 				raw_gyro				raw_accel			temp					int_enable
-    0x74,						0x43,						0x3B,					0x41,					0x38,
-    //dmp_int_status	int_status			pwr_mgmt_1		pwr_mgmt_2
-    0x39,						0x3A,						0x6B,					0x6C,
-    //int_pin_cfg			mem_r_w					accel_offs		i2c_mst
-    0x37,						0x6F,						0x06,					0x24,
-    //bank_sel				mem_start_addr	prgm_start_h
-    0x6D,						0x6E,						0x70
+const struct gyro_reg_s reg = {
+    .who_am_i       = 0x75,
+    .rate_div       = 0x19,
+    .lpf            = 0x1A,
+    .prod_id        = 0x0C,
+    .user_ctrl      = 0x6A,
+    .fifo_en        = 0x23,
+    .gyro_cfg       = 0x1B,
+    .accel_cfg      = 0x1C,
+    .motion_thr     = 0x1F,
+    .motion_dur     = 0x20,
+    .fifo_count_h   = 0x72,
+    .fifo_r_w       = 0x74,
+    .raw_gyro       = 0x43,
+    .raw_accel      = 0x3B,
+    .temp           = 0x41,
+    .int_enable     = 0x38,
+    .dmp_int_status = 0x39,
+    .int_status     = 0x3A,
+    .pwr_mgmt_1     = 0x6B,
+    .pwr_mgmt_2     = 0x6C,
+    .int_pin_cfg    = 0x37,
+    .mem_r_w        = 0x6F,
+    .accel_offs     = 0x06,
+    .i2c_mst        = 0x24,
+    .bank_sel       = 0x6D,
+    .mem_start_addr = 0x6E,
+    .prgm_start_h   = 0x70
 #ifdef AK89xx_SECONDARY
-    //raw_compass			yg_offs_tc			s0_addr 			s0_reg				s0_ctrl
-    ,	0x49,						0x01,						0x25,					0x26,					0x27,
-    //s1_addr        	s1_reg					s1_ctrl				s4_ctrl 			s0_do
-    0x28,						0x29,						0x2A,					0x34,					0x63,
-    //s1_do						i2c_delay_ctrl
-    0x64,						0x67
+    ,.raw_compass   = 0x49,
+    .yg_offs_tc     = 0x01,
+    .s0_addr        = 0x25,
+    .s0_reg         = 0x26,
+    .s0_ctrl        = 0x27,
+    .s1_addr        = 0x28,
+    .s1_reg         = 0x29,
+    .s1_ctrl        = 0x2A,
+    .s4_ctrl        = 0x34,
+    .s0_do          = 0x63,
+    .s1_do          = 0x64,
+    .i2c_delay_ctrl = 0x67
 #endif
 };
 const struct hw_s hw =
 {
-    //addr				max_fifo		num_reg		temp_sens
-    0x68,				1024,				118,			340,
-    //temp_offset	bank_size
-    -521,				256
+    .addr           = 0x68,
+    .max_fifo       = 1024,
+    .num_reg        = 118,
+    .temp_sens      = 340,
+    .temp_offset    = -521,
+    .bank_size      = 256
 #if defined AK89xx_SECONDARY
-    //compass_fsr
-    ,	AK89xx_FSR
+    ,.compass_fsr    = AK89xx_FSR
 #endif
 };
 
 const struct test_s test =
 {
-    //gyro_sens				accel_sens				reg_rate_div		reg_lpf
-    32768/250,			32768/16,					0,/* 1kHz. */		1,    /* 188Hz. */
-    //reg_gyro_fsr 		reg_accel_fsr			wait_ms					packet_thresh
-    0,/*250dps.*/		0x18,/* 16g. */		50,							5,    /* 5% */
-    //min_dps					max_dps						max_gyro_var		min_g
-    10.f,						105.f,						0.14f,					0.3f,
-    //max_g						max_accel_var
-    0.95f,					0.14f
+    .gyro_sens      = 32768/250,
+    .accel_sens     = 32768/16,
+    .reg_rate_div   = 0,    /* 1kHz. */
+    .reg_lpf        = 1,    /* 188Hz. */
+    .reg_gyro_fsr   = 0,    /* 250dps. */
+    .reg_accel_fsr  = 0x18, /* 16g. */
+    .wait_ms        = 50,
+    .packet_thresh  = 5,    /* 5% */
+    .min_dps        = 10.f,
+    .max_dps        = 105.f,
+    .max_gyro_var   = 0.14f,
+    .min_g          = 0.3f,
+    .max_g          = 0.95f,
+    .max_accel_var  = 0.14f
 };
 
-//static struct gyro_state_s st =
-//{
-//    .reg = &reg,
-//    .hw = &hw,
-//    .test = &test
-//};
-static struct gyro_state_s st;
-
+static struct gyro_state_s st = {
+    .reg = &reg,
+    .hw = &hw,
+    .test = &test
+};
 
 #elif defined MPU6500
 const struct gyro_reg_s reg =
 {
-    //who_am_i		rate_div		lpf						prod_id			user_ctrl
-    0x75,				0x19,				0x1A,					0x0C,				0x6A,
-    //fifo_en			gyro_cfg		accel_cfg			accel_cfg2	lp_accel_odr
-    0x23,				0x1B,				0x1C,					0x1D,				0x1E,
-    //motion_thr	motion_dur	fifo_count_h	fifo_r_w		raw_gyro
-    0x1F,				0x20,				0x72,					0x74,				0x43,
-    //raw_accel		temp				int_enable		dmp_int_status	int_status
-    0x3B,				0x41,				0x38,					0x39,						0x3A,
-    //accel_intel	pwr_mgmt_1	pwr_mgmt_2		int_pin_cfg	mem_r_w
-    0x69,				0x6B,				0x6C,					0x37,				0x6F,
-    //accel_offs	i2c_mst			bank_sel			mem_start_addr	prgm_start_h
-    0x77,				0x24,				0x6D,					0x6E,						0x70
+    .who_am_i       = 0x75,
+    .rate_div       = 0x19,
+    .lpf            = 0x1A,
+    .prod_id        = 0x0C,
+    .user_ctrl      = 0x6A,
+    .fifo_en        = 0x23,
+    .gyro_cfg       = 0x1B,
+    .accel_cfg      = 0x1C,
+    .accel_cfg2     = 0x1D,
+    .lp_accel_odr   = 0x1E,
+    .motion_thr     = 0x1F,
+    .motion_dur     = 0x20,
+    .fifo_count_h   = 0x72,
+    .fifo_r_w       = 0x74,
+    .raw_gyro       = 0x43,
+    .raw_accel      = 0x3B,
+    .temp           = 0x41,
+    .int_enable     = 0x38,
+    .dmp_int_status = 0x39,
+    .int_status     = 0x3A,
+    .accel_intel    = 0x69,
+    .pwr_mgmt_1     = 0x6B,
+    .pwr_mgmt_2     = 0x6C,
+    .int_pin_cfg    = 0x37,
+    .mem_r_w        = 0x6F,
+    .accel_offs     = 0x77,
+    .i2c_mst        = 0x24,
+    .bank_sel       = 0x6D,
+    .mem_start_addr = 0x6E,
+    .prgm_start_h   = 0x70
 #ifdef AK89xx_SECONDARY
-    //raw_compass	s0_addr			s0_reg				s0_ctrl			s1_addr
-    , 0x49,				0x25,				0x26,					0x27,				0x28,
-    //s1_reg			s1_ctrl			s4_ctrl				s0_do				s1_do
-    0x29,				0x2A,				0x34,					0x63,				0x64,
-    //i2c_delay_ctrl
-    0x67
+    ,.raw_compass   = 0x49,
+    .s0_addr        = 0x25,
+    .s0_reg         = 0x26,
+    .s0_ctrl        = 0x27,
+    .s1_addr        = 0x28,
+    .s1_reg         = 0x29,
+    .s1_ctrl        = 0x2A,
+    .s4_ctrl        = 0x34,
+    .s0_do          = 0x63,
+    .s1_do          = 0x64,
+    .i2c_delay_ctrl = 0x67
 #endif
 };
 const struct hw_s hw =
 {
-    //addr		max_fifo		num_reg		temp_sens
-    0x68,		1024,				128,			321,
-    //temp_offset			bank_size
-    0,							256
+    .addr           = 0x68,
+    .max_fifo       = 1024,
+    .num_reg        = 128,
+    .temp_sens      = 321,
+    .temp_offset    = 0,
+    .bank_size      = 256
 #if defined AK89xx_SECONDARY
-    //compass_fsr
-    , AK89xx_FSR
+    ,.compass_fsr    = AK89xx_FSR
 #endif
 };
 
 const struct test_s test =
 {
-    //gyro_sens
-    32768/250,
-    //accel_sens
-    32768/2,  //FSR = +-2G = 16384 LSB/G
-    //reg_rate_div
-    0,    /* 1kHz. */
-    //reg_lpf
-    2,    /* 92Hz low pass filter*/
-    //reg_gyro_fsr
-    0,    /* 250dps. */
-    //reg_accel_fsr
-    0x0,  /* Accel FSR setting = 2g. */
-    //wait_ms
-    200,   //200ms stabilization time
-    //packet_thresh
-    200,    /* 200 samples */
-    //min_dps
-    20.f,  //20 dps for Gyro Criteria C
-    //max_dps
-    60.f, //Must exceed 60 dps threshold for Gyro Criteria B
-    //max_gyro_var
-    .5f, //Must exceed +50% variation for Gyro Criteria A
-    //min_g
-    .225f, //Accel must exceed Min 225 mg for Criteria B
-    //max_g
-    .675f, //Accel cannot exceed Max 675 mg for Criteria B
-    //max_accel_var
-    .5f,  //Accel must be within 50% variation for Criteria A
-    //max_g_offset
-    .5f,   //500 mg for Accel Criteria C
-    //sample_wait_ms
-    10    //10ms sample time wait
+    .gyro_sens      = 32768/250,
+    .accel_sens     = 32768/2,  //FSR = +-2G = 16384 LSB/G
+    .reg_rate_div   = 0,    /* 1kHz. */
+    .reg_lpf        = 2,    /* 92Hz low pass filter*/
+    .reg_gyro_fsr   = 0,    /* 250dps. */
+    .reg_accel_fsr  = 0x0,  /* Accel FSR setting = 2g. */
+    .wait_ms        = 200,   //200ms stabilization time
+    .packet_thresh  = 200,    /* 200 samples */
+    .min_dps        = 20.f,  //20 dps for Gyro Criteria C
+    .max_dps        = 60.f, //Must exceed 60 dps threshold for Gyro Criteria B
+    .max_gyro_var   = .5f, //Must exceed +50% variation for Gyro Criteria A
+    .min_g          = .225f, //Accel must exceed Min 225 mg for Criteria B
+    .max_g          = .675f, //Accel cannot exceed Max 675 mg for Criteria B
+    .max_accel_var  = .5f,  //Accel must be within 50% variation for Criteria A
+    .max_g_offset   = .5f,   //500 mg for Accel Criteria C
+    .sample_wait_ms = 10    //10ms sample time wait
 };
 
 static struct gyro_state_s st =

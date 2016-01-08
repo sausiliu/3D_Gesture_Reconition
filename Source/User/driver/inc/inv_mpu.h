@@ -30,7 +30,7 @@
 
 #define EMPL_TARGET_STM32F4	1
 #define MPU9150			1
-
+#define EMPL	1
 
 struct int_param_s {
 #if defined EMPL_TARGET_MSP430 || defined MOTION_DRIVER_TARGET_MSP430

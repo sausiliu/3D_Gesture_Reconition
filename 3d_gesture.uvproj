@@ -355,7 +355,7 @@
             <wLevel>0</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
-            <uC99>0</uC99>
+            <uC99>1</uC99>
             <useXO>0</useXO>
             <VariousControls>
               <MiscControls></MiscControls>
@@ -509,6 +509,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\User\driver\src\sensor\inv_mpu.c</FilePath>
             </File>
+            <File>
+              <FileName>log_stm32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\core\driver\stm32L\log_stm32.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -585,9 +590,59 @@
           <GroupName>core</GroupName>
           <Files>
             <File>
-              <FileName>log_stm32.c</FileName>
+              <FileName>inv_mpu_dmp_motion_driver.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Source\core\driver\stm32L\log_stm32.c</FilePath>
+              <FilePath>.\Source\core\driver\eMPL\inv_mpu_dmp_motion_driver.c</FilePath>
+            </File>
+            <File>
+              <FileName>eMPL_outputs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\core\eMPL-hal\eMPL_outputs.c</FilePath>
+            </File>
+            <File>
+              <FileName>data_builder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\core\mllite\data_builder.c</FilePath>
+            </File>
+            <File>
+              <FileName>hal_outputs.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\core\mllite\hal_outputs.c</FilePath>
+            </File>
+            <File>
+              <FileName>message_layer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\core\mllite\message_layer.c</FilePath>
+            </File>
+            <File>
+              <FileName>ml_math_func.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\core\mllite\ml_math_func.c</FilePath>
+            </File>
+            <File>
+              <FileName>mlmath.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\core\mllite\mlmath.c</FilePath>
+            </File>
+            <File>
+              <FileName>mpl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\core\mllite\mpl.c</FilePath>
+            </File>
+            <File>
+              <FileName>results_holder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\core\mllite\results_holder.c</FilePath>
+            </File>
+            <File>
+              <FileName>start_manager.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\core\mllite\start_manager.c</FilePath>
+            </File>
+            <File>
+              <FileName>storage_manager.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\core\mllite\storage_manager.c</FilePath>
             </File>
           </Files>
         </Group>

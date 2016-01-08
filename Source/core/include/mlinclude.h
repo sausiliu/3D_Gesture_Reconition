@@ -36,3 +36,5 @@ extern int functionExitLog(const char *file, const char *func);
 // #define return if ( functionExitLog(__FILE__, __FUNCTION__) ) return
 
 #endif //INV_INCLUDE_H__
+
+

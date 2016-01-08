@@ -14,20 +14,19 @@
  *      @details    All functions are preceded by the dmp_ prefix to
  *                  differentiate among MPL and general driver function calls.
  */
- /* Scheduler includes. */
-#include "FreeRTOS.h"
-#include "task.h"
-#include "queue.h"
-
-/* Library includes. */
-#include "stm32f10x_it.h"
- 
- 
+/* Standard includes. */
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+
+/* Scheduler includes. */
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+
+
 #include "inv_mpu.h"
 #include "inv_mpu_dmp_motion_driver.h"
 #include "dmpKey.h"
@@ -42,8 +41,7 @@
  * get_ms(unsigned long *count)
  */
 #if defined EMPL_TARGET_STM32F4
-#include "i2c.h"   
-
+#include "i2c.h"
    
 #define i2c_write   Sensors_I2C_WriteRegister
 #define i2c_read    Sensors_I2C_ReadRegister
@@ -503,10 +501,12 @@ struct dmp_s {
 };
 
 static struct dmp_s dmp = {
-    //tap_cb		android_orient_cb		orient
-			NULL,			NULL,								0,
-		//feature_mask	fifo_rate		packet_length
-			0,						0,					0
+    .tap_cb = NULL,
+    .android_orient_cb = NULL,
+    .orient = 0,
+    .feature_mask = 0,
+    .fifo_rate = 0,
+    .packet_length = 0
 };
 
 /**

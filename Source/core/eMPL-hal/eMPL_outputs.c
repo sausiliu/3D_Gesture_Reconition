@@ -14,6 +14,18 @@
  *       @file eMPL_outputs.c
  *       @brief Embedded MPL outputs.
  */
+ 
+
+/* Standard includes. */
+#include <stdio.h>
+#include <string.h>
+
+/* Scheduler includes. */
+#include "FreeRTOS.h"
+#include "task.h"
+#include "queue.h"
+
+ 
 #include "eMPL_outputs.h"
 #include "ml_math_func.h"
 #include "mlmath.h"
@@ -116,11 +128,14 @@ int inv_get_sensor_type_heading(long *data, int8_t *accuracy, inv_time_t *timest
     long t1, t2, q00, q03, q12, q22;
     float fdata;
 
+	//sausiliu
+	#if 0
     q00 = inv_q29_mult(eMPL_out.quat[0], eMPL_out.quat[0]);
     q03 = inv_q29_mult(eMPL_out.quat[0], eMPL_out.quat[3]);
     q12 = inv_q29_mult(eMPL_out.quat[1], eMPL_out.quat[2]);
     q22 = inv_q29_mult(eMPL_out.quat[2], eMPL_out.quat[2]);
-
+#endif
+	
     /* X component of the Ybody axis in World frame */
     t1 = q12 - q03;
 
@@ -153,7 +168,8 @@ int inv_get_sensor_type_euler(long *data, int8_t *accuracy, inv_time_t *timestam
     long t1, t2, t3;
     long q00, q01, q02, q03, q11, q12, q13, q22, q23, q33;
     float values[3];
-
+//sausiliu
+	#if 0
     q00 = inv_q29_mult(eMPL_out.quat[0], eMPL_out.quat[0]);
     q01 = inv_q29_mult(eMPL_out.quat[0], eMPL_out.quat[1]);
     q02 = inv_q29_mult(eMPL_out.quat[0], eMPL_out.quat[2]);
@@ -164,7 +180,7 @@ int inv_get_sensor_type_euler(long *data, int8_t *accuracy, inv_time_t *timestam
     q22 = inv_q29_mult(eMPL_out.quat[2], eMPL_out.quat[2]);
     q23 = inv_q29_mult(eMPL_out.quat[2], eMPL_out.quat[3]);
     q33 = inv_q29_mult(eMPL_out.quat[3], eMPL_out.quat[3]);
-
+#endif
     /* X component of the Ybody axis in World frame */
     t1 = q12 - q03;
 
