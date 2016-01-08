@@ -361,7 +361,7 @@
               <MiscControls></MiscControls>
               <Define>RVDS_ARMCM3_LM3S102</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Source;.\Source\User;.\Source\FreeRTOS\include;.\Source\Common\include;.\Source\User\STM32F10xFWLib\inc;.\Source\User\driver\inc</IncludePath>
+              <IncludePath>.\Source;.\Source\User;.\Source\FreeRTOS\include;.\Source\Common\include;.\Source\User\STM32F10xFWLib\inc;.\Source\User\driver\inc;.\Source\core\include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -578,6 +578,16 @@
               <FileName>mpu9150.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\User\mpu9150.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>core</GroupName>
+          <Files>
+            <File>
+              <FileName>log_stm32.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\core\driver\stm32L\log_stm32.c</FilePath>
             </File>
           </Files>
         </Group>
