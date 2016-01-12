@@ -23,7 +23,7 @@
 #include "mlinclude.h"
 
 /**
- * @brief  Initializes the MPL. Should be called first and once
+ * @brief  Initializes the MPL. Should be called first and once 
  * @return Returns INV_SUCCESS if successful or an error code if not.
  */
 inv_error_t inv_init_mpl(void)
@@ -32,12 +32,12 @@ inv_error_t inv_init_mpl(void)
 
     /* initialize the start callback manager */
 //    INV_ERROR_CHECK(inv_init_start_manager());
-    inv_init_start_manager();
+inv_init_start_manager();
     /* initialize the data builder */
 //    INV_ERROR_CHECK(inv_init_data_builder());
-    inv_init_data_builder();
-//    INV_ERROR_CHECK(inv_enable_results_holder());
-    inv_enable_results_holder();
+inv_init_data_builder();
+    INV_ERROR_CHECK(inv_enable_results_holder());
+inv_enable_results_holder();
     return INV_SUCCESS;
 }
 
@@ -56,15 +56,14 @@ inv_error_t inv_get_version(char **version)
     return INV_SUCCESS;
 }
 
-/**
+/** 
  *  @brief  Starts the MPL. Typically called after inv_init_mpl() or after a
  *          inv_stop_mpl() to start the MPL back up an running.
  *  @return INV_SUCCESS if successful or a non-zero error code otherwise.
  */
 inv_error_t inv_start_mpl(void)
 {
-//    INV_ERROR_CHECK(inv_execute_mpl_start_notification());
-	inv_execute_mpl_start_notification();
+    INV_ERROR_CHECK(inv_execute_mpl_start_notification());
     return INV_SUCCESS;
 }
 

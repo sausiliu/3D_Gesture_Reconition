@@ -22,7 +22,7 @@
 
 
 #include <string.h>
-#include "log.h"
+//#include "log.h"
 #include "start_manager.h"
 
 typedef inv_error_t (*inv_start_cb_func)();

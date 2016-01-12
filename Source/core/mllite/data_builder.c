@@ -27,7 +27,7 @@
 #include "message_layer.h"
 #include "results_holder.h"
 
-#include "log.h"
+//#include "log.h"
 #undef MPL_LOG_TAG
 #define MPL_LOG_TAG "MPL"
 
@@ -878,7 +878,7 @@ inv_error_t inv_register_data_cb(
         inv_data_builder.process[kk].data_required = sensor_type;
         inv_data_builder.num_cb++;
     } else {
-        MPL_LOGE("Unable to add feature callback as too many were already registered\n");
+//        MPL_LOGE("Unable to add feature callback as too many were already registered\n");
         result = INV_ERROR_MEMORY_EXAUSTED;
     }
 

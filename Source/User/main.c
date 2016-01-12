@@ -75,8 +75,6 @@
 #include "semphr.h"
 #include "mpu9150.h"
 
-
-
 /* Task priorities. */
 #define mainQUEUE_POLL_PRIORITY					( tskIDLE_PRIORITY + 2 )
 #define mainCHECK_TASK_PRIORITY					( tskIDLE_PRIORITY + 3 )
@@ -92,7 +90,7 @@
 #define mainCHECK_TASK_STACK_SIZE			( configMINIMAL_STACK_SIZE + 50 )
 
 /* Dimensions the buffer into which the jitter time is written. */
-#define mainMAX_MSG_LEN						100
+#define mainMAX_MSG_LEN						3
 
 /* The time between cycles of the 'check' task. */
 #define mainCHECK_DELAY						( ( TickType_t ) 5000 / portTICK_PERIOD_MS )
@@ -109,7 +107,7 @@ information. */
 
 /* The maximum number of message that can be waiting for uart at any one
 time. */
-#define mainUART_QUEUE_SIZE					( 10 )
+#define mainUART_QUEUE_SIZE					( 3 )
 
 /*-----------------------------------------------------------*/
 
@@ -137,8 +135,6 @@ static void vCheckTask( void *pvParameters );
 static void vMPUTask( void *pvParameters );
 static void vUARTPrintTask( void *pvParameters );
 
-
-
 /*
  * Configures the timers and interrupts for the fast interrupt test as
  * described at the top of this file.
@@ -151,7 +147,7 @@ extern signed portBASE_TYPE xSerialPutChar( xComPortHandle, signed char , TickTy
 /* The queue used to send messages to the uart task. */
 QueueHandle_t xUARTQueue;
 
-xSemaphoreHandle xSem, xSem1;
+unsigned char *mpl_key = (unsigned char*)"eMPL 5.1";
 
 /*-----------------------------------------------------------*/
 
@@ -164,21 +160,19 @@ int main( void )
     /* Create the queue used by the uart task.  Messages for display on the uart1
     are received via this queue. */
     xUARTQueue = xQueueCreate( mainUART_QUEUE_SIZE, sizeof( xUARTMessage ) );
-    xSem = xSemaphoreCreateBinary();
-    xSem1	= xSemaphoreCreateBinary();
+
     prvSetupHardware();
 
-
     /* Start the standard demo tasks. */
-    vStartBlockingQueueTasks( mainBLOCK_Q_PRIORITY );
-    vCreateBlockTimeTasks();
-    vStartSemaphoreTasks( mainSEM_TEST_PRIORITY );
-    vStartPolledQueueTasks( mainQUEUE_POLL_PRIORITY );
-    vStartIntegerMathTasks( mainINTEGER_TASK_PRIORITY );
+//    vStartBlockingQueueTasks( mainBLOCK_Q_PRIORITY );
+//    vCreateBlockTimeTasks();
+//    vStartSemaphoreTasks( mainSEM_TEST_PRIORITY );
+//    vStartPolledQueueTasks( mainQUEUE_POLL_PRIORITY );
+//    vStartIntegerMathTasks( mainINTEGER_TASK_PRIORITY );
 
     vAltStartComTestTasks( mainCOM_TEST_PRIORITY, mainCOM_TEST_BAUD_RATE, mainCOM_TEST_LED );
-	
-    xTaskCreate( vUARTPrintTask, "uart_print", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
+
+   xTaskCreate( vUARTPrintTask, "uart_print", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
     xTaskCreate( vMPUTask, "mpu9150", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
     xTaskCreate( vCheckTask, "Check", mainCHECK_TASK_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY, NULL );
 
@@ -208,13 +202,13 @@ void vMPUTask(void * pvParameters)
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-		MPU9150Init();
+    MPU9150Init();
     for(;;)
     {
-			GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_RESET);
-			vTaskDelay(100);
-			GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_SET);
-			vTaskDelay(100);
+        GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_RESET);
+        vTaskDelay(100);
+        GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_SET);
+        vTaskDelay(100);
     }
 }
 
@@ -247,40 +241,8 @@ static void vCheckTask( void *pvParameters )
         /* Perform this check every mainCHECK_DELAY milliseconds. */
         vTaskDelayUntil( &xLastExecutionTime, mainCHECK_DELAY );
 
-        /* Has an error been found in any task? */
+        sprintf( ( char * ) cPassMessage, "PASS [%uns]\n", ( ( unsigned long ) usMaxJitter ) * mainNS_PER_CLOCK );
 
-        if( xAreBlockingQueuesStillRunning() != pdTRUE )
-        {
-            xMessage.pcMessage = "ERROR IN BLOCK Q\n";
-        }
-        else if( xAreBlockTimeTestTasksStillRunning() != pdTRUE )
-        {
-            xMessage.pcMessage = "ERROR IN BLOCK TIME\n";
-        }
-        else if( xAreSemaphoreTasksStillRunning() != pdTRUE )
-        {
-            xMessage.pcMessage = "ERROR IN SEMAPHORE\n";
-        }
-        else if( xArePollingQueuesStillRunning() != pdTRUE )
-        {
-            xMessage.pcMessage = "ERROR IN POLL Q\n";
-        }
-        else if( xIsCreateTaskStillRunning() != pdTRUE )
-        {
-            xMessage.pcMessage = "ERROR IN CREATE\n";
-        }
-        else if( xAreIntegerMathsTaskStillRunning() != pdTRUE )
-        {
-            xMessage.pcMessage = "ERROR IN MATH\n";
-        }
-//        else if( xAreComTestTasksStillRunning() != pdTRUE )
-//        {
-//            xMessage.pcMessage = "ERROR IN COM TEST\n";
-//        }
-        else
-        {
-            sprintf( ( char * ) cPassMessage, "PASS [%uns]\n", ( ( unsigned long ) usMaxJitter ) * mainNS_PER_CLOCK );
-        }
         /* Send the message to the LCD gatekeeper for display. */
         xQueueSend( xUARTQueue, &xMessage, portMAX_DELAY );
     }
@@ -346,7 +308,7 @@ static void prvSetupHardware( void )
     /* Configure HCLK clock as SysTick clock source. */
     SysTick_CLKSourceConfig( SysTick_CLKSource_HCLK );
 
-    vParTestInitialise();
+//    vParTestInitialise();
 
 }
 

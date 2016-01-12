@@ -73,8 +73,7 @@
 #include "stm32f10x_usart.h"
 #include "serial.h"
 #include "semphr.h"
-
-
+#include "mpu9150.h"
 
 /* Task priorities. */
 #define mainQUEUE_POLL_PRIORITY					( tskIDLE_PRIORITY + 2 )
@@ -91,7 +90,7 @@
 #define mainCHECK_TASK_STACK_SIZE			( configMINIMAL_STACK_SIZE + 50 )
 
 /* Dimensions the buffer into which the jitter time is written. */
-#define mainMAX_MSG_LEN						100
+#define mainMAX_MSG_LEN						20
 
 /* The time between cycles of the 'check' task. */
 #define mainCHECK_DELAY						( ( TickType_t ) 5000 / portTICK_PERIOD_MS )
@@ -108,7 +107,7 @@ information. */
 
 /* The maximum number of message that can be waiting for uart at any one
 time. */
-#define mainUART_QUEUE_SIZE					( 10 )
+#define mainUART_QUEUE_SIZE					( 3 )
 
 /*-----------------------------------------------------------*/
 
@@ -133,12 +132,8 @@ int fputc( int ch, FILE *f );
  * via a queue.
  */
 static void vCheckTask( void *pvParameters );
-static void vLEDTask( void *pvParameters );
+static void vMPUTask( void *pvParameters );
 static void vUARTPrintTask( void *pvParameters );
-static void vTask1( void *pvParameters );
-static void vTask2( void *pvParameters );
-
-
 
 /*
  * Configures the timers and interrupts for the fast interrupt test as
@@ -152,7 +147,7 @@ extern signed portBASE_TYPE xSerialPutChar( xComPortHandle, signed char , TickTy
 /* The queue used to send messages to the uart task. */
 QueueHandle_t xUARTQueue;
 
-xSemaphoreHandle xSem, xSem1;
+unsigned char *mpl_key = (unsigned char*)"eMPL 5.1";
 
 /*-----------------------------------------------------------*/
 
@@ -165,24 +160,20 @@ int main( void )
     /* Create the queue used by the uart task.  Messages for display on the uart1
     are received via this queue. */
     xUARTQueue = xQueueCreate( mainUART_QUEUE_SIZE, sizeof( xUARTMessage ) );
-    xSem = xSemaphoreCreateBinary();
-    xSem1	= xSemaphoreCreateBinary();
+
     prvSetupHardware();
-	
-	
+
     /* Start the standard demo tasks. */
-    vStartBlockingQueueTasks( mainBLOCK_Q_PRIORITY );
-    vCreateBlockTimeTasks();
-    vStartSemaphoreTasks( mainSEM_TEST_PRIORITY );
-    vStartPolledQueueTasks( mainQUEUE_POLL_PRIORITY );
-    vStartIntegerMathTasks( mainINTEGER_TASK_PRIORITY );
+//    vStartBlockingQueueTasks( mainBLOCK_Q_PRIORITY );
+//    vCreateBlockTimeTasks();
+//    vStartSemaphoreTasks( mainSEM_TEST_PRIORITY );
+//    vStartPolledQueueTasks( mainQUEUE_POLL_PRIORITY );
+//    vStartIntegerMathTasks( mainINTEGER_TASK_PRIORITY );
 
     vAltStartComTestTasks( mainCOM_TEST_PRIORITY, mainCOM_TEST_BAUD_RATE, mainCOM_TEST_LED );
-
+	
     xTaskCreate( vUARTPrintTask, "uart_print", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
-    xTaskCreate( vLEDTask, "led_test", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
-    xTaskCreate( vTask1, "task1", configMINIMAL_STACK_SIZE, NULL, 6, NULL );
-    xTaskCreate( vTask2, "task2", configMINIMAL_STACK_SIZE, NULL, 6, NULL );
+    xTaskCreate( vMPUTask, "mpu9150", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
     xTaskCreate( vCheckTask, "Check", mainCHECK_TASK_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY, NULL );
 
     /* The suicide tasks must be created last as they need to know how many
@@ -202,7 +193,7 @@ int main( void )
 }
 /*-----------------------test-------------------------------*/
 
-void vLEDTask(void * pvParameters)
+void vMPUTask(void * pvParameters)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
 
@@ -211,41 +202,16 @@ void vLEDTask(void * pvParameters)
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
+		MPU9150Init();
     for(;;)
     {
-        GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_SET);
-        vTaskDelay(100);
-        GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_RESET);
-        vTaskDelay(100);
+			GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_RESET);
+			vTaskDelay(100);
+			GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_SET);
+			vTaskDelay(100);
     }
 }
 
-/*-----------------------------------------------------------*/
-static void vTask1( void *pvParameters )
-{
-    xUARTMessage xMessage;
-    xMessage.pcMessage = "11111111\n\r";
-    xSemaphoreGive(xSem);
-    for(;;)
-    {
-
-        xQueueSend( xUARTQueue, &xMessage, portMAX_DELAY );
-        vTaskDelay(2000);
-    }
-}
-/*-----------------------------------------------------------*/
-static void vTask2( void *pvParameters )
-{
-    xUARTMessage xMessage;
-    xMessage.pcMessage = "22222222\n\r";
-    for(;;)
-    {
-//        xSemaphoreTake(xSem, portMAX_DELAY);
-        xQueueSend( xUARTQueue, &xMessage, portMAX_DELAY );
-//			xSemaphoreGive(xSem1);
-        vTaskDelay(2000);
-    }
-}
 /*-----------------------------------------------------------*/
 
 void vUARTPrintTask( void *pvParameters )
@@ -375,10 +341,9 @@ static void prvSetupHardware( void )
     SysTick_CLKSourceConfig( SysTick_CLKSource_HCLK );
 
     vParTestInitialise();
+
 }
 
-
-/*-----------------------------------------------------------*/
 int fputc( int ch, FILE *f )
 {
     xSerialPutChar(NULL, ch, 0);

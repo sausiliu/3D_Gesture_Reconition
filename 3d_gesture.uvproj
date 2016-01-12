@@ -48,7 +48,7 @@
           <OutputName>RTOSDemo</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
-          <CreateHexFile>1</CreateHexFile>
+          <CreateHexFile>0</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>1</BrowseInformation>
           <ListingPath>.\Lists\</ListingPath>
@@ -143,7 +143,7 @@
             <RestoreTracepoints>1</RestoreTracepoints>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>6</TargetSelection>
+          <TargetSelection>1</TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -157,7 +157,7 @@
             <PeripheralDll></PeripheralDll>
             <PeripheralDllArguments></PeripheralDllArguments>
             <InitializationFile></InitializationFile>
-            <Driver>Segger\JL2CM3.dll</Driver>
+            <Driver>BIN\UL2CM3.DLL</Driver>
           </TargetDlls>
         </DebugOption>
         <Utilities>
@@ -171,7 +171,7 @@
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3>"" ()</Flash3>
+          <Flash3></Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -343,7 +343,7 @@
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>1</Optim>
+            <Optim>0</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>0</OneElfS>
@@ -509,21 +509,11 @@
               <FileType>1</FileType>
               <FilePath>.\Source\User\driver\src\sensor\inv_mpu.c</FilePath>
             </File>
-            <File>
-              <FileName>log_stm32.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\core\driver\stm32L\log_stm32.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>User</GroupName>
           <Files>
-            <File>
-              <FileName>ParTest.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\User\ParTest\ParTest.c</FilePath>
-            </File>
             <File>
               <FileName>timertest.c</FileName>
               <FileType>1</FileType>
@@ -535,54 +525,19 @@
               <FilePath>.\Source\User\main.c</FilePath>
             </File>
             <File>
-              <FileName>spi_flash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\User\spi_flash.c</FilePath>
-            </File>
-            <File>
-              <FileName>semtest.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\Common\Minimal\semtest.c</FilePath>
-            </File>
-            <File>
-              <FileName>BlockQ.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\Common\Minimal\BlockQ.c</FilePath>
-            </File>
-            <File>
-              <FileName>blocktim.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\Common\Minimal\blocktim.c</FilePath>
-            </File>
-            <File>
               <FileName>comtest.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\Common\Minimal\comtest.c</FilePath>
             </File>
             <File>
-              <FileName>death.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\Common\Minimal\death.c</FilePath>
-            </File>
-            <File>
-              <FileName>flash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\Common\Minimal\flash.c</FilePath>
-            </File>
-            <File>
-              <FileName>integer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\Common\Minimal\integer.c</FilePath>
-            </File>
-            <File>
-              <FileName>PollQ.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\Common\Minimal\PollQ.c</FilePath>
-            </File>
-            <File>
               <FileName>mpu9150.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\User\mpu9150.c</FilePath>
+            </File>
+            <File>
+              <FileName>death.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\Common\Minimal\death.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -643,6 +598,30 @@
               <FileName>storage_manager.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\core\mllite\storage_manager.c</FilePath>
+            </File>
+            <File>
+              <FileName>libmpllib.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>.\Source\core\mpl\libmpllib.lib</FilePath>
+              <FileOption>
+                <CommonProperty>
+                  <UseCPPCompiler>2</UseCPPCompiler>
+                  <RVCTCodeConst>0</RVCTCodeConst>
+                  <RVCTZI>0</RVCTZI>
+                  <RVCTOtherData>0</RVCTOtherData>
+                  <ModuleSelection>0</ModuleSelection>
+                  <IncludeInBuild>2</IncludeInBuild>
+                  <AlwaysBuild>2</AlwaysBuild>
+                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
+                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
+                  <PublicsOnly>2</PublicsOnly>
+                  <StopOnExitCode>11</StopOnExitCode>
+                  <CustomArgument></CustomArgument>
+                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <ComprImg>0</ComprImg>
+                </CommonProperty>
+                <FileArmAds/>
+              </FileOption>
             </File>
           </Files>
         </Group>

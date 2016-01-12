@@ -23,6 +23,6 @@
 #include "results_holder.h"
 #include "start_manager.h"
 #include "storage_manager.h"
-#include "log.h"
+//#include "log.h"
 #include "mlinclude.h"
 //#include "..\HAL\include\mlos.h"

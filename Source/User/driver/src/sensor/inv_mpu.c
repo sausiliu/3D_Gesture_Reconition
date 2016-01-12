@@ -60,9 +60,15 @@
 #define 	get_ms(time)\
 					*time = xTaskGetTickCount();
 
-#define log_i       MPL_LOGI
-#define log_e       MPL_LOGE
+#if 0
+//#define log_i       MPL_LOGI
+//#define log_e       MPL_LOGE
+#else
+#define log_i(...)     do {} while (0)
+#define log_e(...)     do {} while (0)
+#endif
 #define min(a,b) ((a<b)?a:b)
+
 
 #elif defined MOTION_DRIVER_TARGET_MSP430
 #include "msp430.h"
@@ -99,8 +105,8 @@ static inline int reg_int_cb(struct int_param_s *int_param)
     return msp430_reg_int_cb(int_param->cb, int_param->pin, int_param->lp_exit,
                              int_param->active_low);
 }
-#define log_i       MPL_LOGI
-#define log_e       MPL_LOGE
+//#define log_i       MPL_LOGI
+//#define log_e       MPL_LOGE
 /* labs is already defined by TI's toolchain. */
 /* fabs is for doubles. fabsf is for floats. */
 #define fabs        fabsf
@@ -124,8 +130,8 @@ static inline int reg_int_cb(struct int_param_s *int_param)
     sensor_board_irq_connect(int_param->pin, int_param->cb, int_param->arg);
     return 0;
 }
-#define log_i       MPL_LOGI
-#define log_e       MPL_LOGE
+//#define log_i       MPL_LOGI
+//#define log_e       MPL_LOGE
 /* UC3 is a 32-bit processor, so abs and labs are equivalent. */
 #define labs        abs
 #define fabs(x)     (((x)>0)?(x):-(x))
