@@ -61,14 +61,10 @@
 #include "stm32f10x_it.h"
 
 /* Demo app includes. */
-#include "BlockQ.h"
+
 #include "death.h"
 #include "integer.h"
-#include "blocktim.h"
-#include "partest.h"
 #include "semtest.h"
-#include "PollQ.h"
-#include "flash.h"
 #include "comtest2.h"
 #include "stm32f10x_usart.h"
 #include "serial.h"
@@ -90,7 +86,7 @@
 #define mainCHECK_TASK_STACK_SIZE			( configMINIMAL_STACK_SIZE + 50 )
 
 /* Dimensions the buffer into which the jitter time is written. */
-#define mainMAX_MSG_LEN						3
+#define mainMAX_MSG_LEN						20
 
 /* The time between cycles of the 'check' task. */
 #define mainCHECK_DELAY						( ( TickType_t ) 5000 / portTICK_PERIOD_MS )
@@ -107,7 +103,7 @@ information. */
 
 /* The maximum number of message that can be waiting for uart at any one
 time. */
-#define mainUART_QUEUE_SIZE					( 3 )
+#define mainUART_QUEUE_SIZE					( 5 )
 
 /*-----------------------------------------------------------*/
 
@@ -132,9 +128,8 @@ int fputc( int ch, FILE *f );
  * via a queue.
  */
 static void vCheckTask( void *pvParameters );
-static void vMPUTask( void *pvParameters );
 static void vUARTPrintTask( void *pvParameters );
-
+void vCreateMPUTask(void);
 /*
  * Configures the timers and interrupts for the fast interrupt test as
  * described at the top of this file.
@@ -147,7 +142,7 @@ extern signed portBASE_TYPE xSerialPutChar( xComPortHandle, signed char , TickTy
 /* The queue used to send messages to the uart task. */
 QueueHandle_t xUARTQueue;
 
-unsigned char *mpl_key = (unsigned char*)"eMPL 5.1";
+//unsigned char *mpl_key = (unsigned char*)"eMPL 5.1";
 
 /*-----------------------------------------------------------*/
 
@@ -164,17 +159,14 @@ int main( void )
     prvSetupHardware();
 
     /* Start the standard demo tasks. */
-//    vStartBlockingQueueTasks( mainBLOCK_Q_PRIORITY );
-//    vCreateBlockTimeTasks();
-//    vStartSemaphoreTasks( mainSEM_TEST_PRIORITY );
-//    vStartPolledQueueTasks( mainQUEUE_POLL_PRIORITY );
-//    vStartIntegerMathTasks( mainINTEGER_TASK_PRIORITY );
 
     vAltStartComTestTasks( mainCOM_TEST_PRIORITY, mainCOM_TEST_BAUD_RATE, mainCOM_TEST_LED );
 
    xTaskCreate( vUARTPrintTask, "uart_print", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
-    xTaskCreate( vMPUTask, "mpu9150", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
-    xTaskCreate( vCheckTask, "Check", mainCHECK_TASK_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY, NULL );
+//    xTaskCreate( vMPUTask, "mpu9150", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL );
+
+		vCreateMPUTask();
+//	xTaskCreate( vCheckTask, "Check", mainCHECK_TASK_STACK_SIZE, NULL, mainCHECK_TASK_PRIORITY, NULL );
 
     /* The suicide tasks must be created last as they need to know how many
     tasks were running prior to their creation in order to ascertain whether
@@ -192,25 +184,6 @@ int main( void )
     return 0;
 }
 /*-----------------------test-------------------------------*/
-
-void vMPUTask(void * pvParameters)
-{
-    GPIO_InitTypeDef GPIO_InitStructure;
-
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-    MPU9150Init();
-    for(;;)
-    {
-        GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_RESET);
-        vTaskDelay(100);
-        GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_SET);
-        vTaskDelay(100);
-    }
-}
 
 /*-----------------------------------------------------------*/
 

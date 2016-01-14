@@ -833,7 +833,8 @@ int mpu_init(struct int_param_s *int_param)
         return -1;
 #endif
 
-    mpu_set_sensors(0);
+    if(mpu_set_sensors(0))
+			return -1;
     return 0;
 }
 
@@ -1773,8 +1774,8 @@ int mpu_set_sensors(unsigned char sensors)
 
     st.chip_cfg.sensors = sensors;
     st.chip_cfg.lp_accel_mode = 0;
-    //delay_ms(50);
-    vTaskDelay(50);
+		
+    vTaskDelay(30);
     return 0;
 }
 
@@ -3052,28 +3053,35 @@ int mpu_set_dmp_state(unsigned char enable)
         if (!st.chip_cfg.dmp_loaded)
             return -1;
         /* Disable data ready interrupt. */
-        set_int_enable(0);
+        if(set_int_enable(0))
+					return -1;
         /* Disable bypass mode. */
-        mpu_set_bypass(0);
+        if(mpu_set_bypass(0))
+					return -1;
         /* Keep constant sample rate, FIFO rate controlled by DMP. */
-        mpu_set_sample_rate(st.chip_cfg.dmp_sample_rate);
+        if(mpu_set_sample_rate(st.chip_cfg.dmp_sample_rate))
+					return -1;
         /* Remove FIFO elements. */
         tmp = 0;
         i2c_write(st.hw->addr, 0x23, 1, &tmp);
         st.chip_cfg.dmp_on = 1;
         /* Enable DMP interrupt. */
-        set_int_enable(1);
-        mpu_reset_fifo();
+        if(set_int_enable(1))
+					return -1;
+        if(mpu_reset_fifo())
+					return -1;
     }
     else
     {
         /* Disable DMP interrupt. */
-        set_int_enable(0);
+        if(set_int_enable(0))
+					return -1;
         /* Restore FIFO settings. */
         tmp = st.chip_cfg.fifo_enable;
         i2c_write(st.hw->addr, 0x23, 1, &tmp);
         st.chip_cfg.dmp_on = 0;
-        mpu_reset_fifo();
+        if(mpu_reset_fifo())
+					return -1;
     }
     return 0;
 }

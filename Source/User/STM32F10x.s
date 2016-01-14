@@ -38,6 +38,8 @@ __heap_limit
 				IMPORT vPortSVCHandler
 				IMPORT vUARTInterruptHandler
 				IMPORT vTimer2IntHandler
+				IMPORT EXTI0_IRQHandler
+
 
                 PRESERVE8
                 THUMB
@@ -176,7 +178,6 @@ Default_Handler PROC
                 EXPORT  RTC_IRQHandler            [WEAK]
                 EXPORT  FLASH_IRQHandler          [WEAK]
                 EXPORT  RCC_IRQHandler            [WEAK]
-                EXPORT  EXTI0_IRQHandler          [WEAK]
                 EXPORT  EXTI1_IRQHandler          [WEAK]
                 EXPORT  EXTI2_IRQHandler          [WEAK]
                 EXPORT  EXTI3_IRQHandler          [WEAK]
@@ -220,7 +221,6 @@ TAMPER_IRQHandler
 RTC_IRQHandler
 FLASH_IRQHandler
 RCC_IRQHandler
-EXTI0_IRQHandler
 EXTI1_IRQHandler
 EXTI2_IRQHandler
 EXTI3_IRQHandler
