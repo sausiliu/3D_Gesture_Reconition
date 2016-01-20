@@ -62,13 +62,11 @@ volatile uint32_t hal_timestamp = 0;
 #define PEDO_READ_MS    (1000)
 #define TEMP_READ_MS    (500)
 #define COMPASS_READ_MS (100)
-struct rx_s
-{
+struct rx_s {
     unsigned char header[3];
     unsigned char cmd;
 };
-struct hal_s
-{
+struct hal_s {
     unsigned char lp_accel_mode;
     unsigned char sensors;
     unsigned char dmp_on;
@@ -93,8 +91,7 @@ volatile unsigned char rx_new;
 unsigned char *mpl_key = (unsigned char*)"eMPL 5.1";
 
 /* Platform-specific information. Kinda like a boardfile. */
-struct platform_data_s
-{
+struct platform_data_s {
     signed char orientation[9];
 };
 
@@ -105,8 +102,7 @@ struct platform_data_s
  * boards at Invensense. If needed, please modify the matrices to match the
  * chip-to-body matrix for your particular set up.
  */
-static struct platform_data_s gyro_pdata =
-{
+static struct platform_data_s gyro_pdata = {
     .orientation = {
         1, 0, 0,
         0, 1, 0,
@@ -115,8 +111,7 @@ static struct platform_data_s gyro_pdata =
 };
 
 #if defined MPU9150 || defined MPU9250
-static struct platform_data_s compass_pdata =
-{
+static struct platform_data_s compass_pdata = {
     .orientation = {
         0, 1, 0,
         1, 0, 0,
@@ -125,8 +120,7 @@ static struct platform_data_s compass_pdata =
 };
 #define COMPASS_ENABLED 1
 #elif defined AK8975_SECONDARY
-static struct platform_data_s compass_pdata =
-{
+static struct platform_data_s compass_pdata = {
     .orientation = {
         -1, 0, 0,
         0, 1, 0,
@@ -135,8 +129,7 @@ static struct platform_data_s compass_pdata =
 };
 #define COMPASS_ENABLED 1
 #elif defined AK8963_SECONDARY
-static struct platform_data_s compass_pdata =
-{
+static struct platform_data_s compass_pdata = {
     .orientation = {
         -1, 0, 0,
         0,-1, 0,
@@ -155,14 +148,12 @@ static void setup_gyro(void)
     unsigned char mask = 0, lp_accel_was_on = 0;
     if (hal.sensors & ACCEL_ON)
         mask |= INV_XYZ_ACCEL;
-    if (hal.sensors & GYRO_ON)
-    {
+    if (hal.sensors & GYRO_ON) {
         mask |= INV_XYZ_GYRO;
         lp_accel_was_on |= hal.lp_accel_mode;
     }
 #ifdef COMPASS_ENABLED
-    if (hal.sensors & COMPASS_ON)
-    {
+    if (hal.sensors & COMPASS_ON) {
         mask |= INV_XYZ_COMPASS;
         lp_accel_was_on |= hal.lp_accel_mode;
     }
@@ -173,8 +164,7 @@ static void setup_gyro(void)
      */
     mpu_set_sensors(mask);
     mpu_configure_fifo(mask);
-    if (lp_accel_was_on)
-    {
+    if (lp_accel_was_on) {
         unsigned short rate;
         hal.lp_accel_mode = 0;
         /* Switching out of LP accel, notify MPL of new accel sampling rate. */
@@ -186,8 +176,7 @@ static void setup_gyro(void)
 
 static void tap_cb(unsigned char direction, unsigned char count)
 {
-    switch (direction)
-    {
+    switch (direction) {
     case TAP_X_UP:
         printf("Tap X+ ");
         break;
@@ -215,8 +204,7 @@ static void tap_cb(unsigned char direction, unsigned char count)
 
 static void android_orient_cb(unsigned char orientation)
 {
-    switch (orientation)
-    {
+    switch (orientation) {
     case ANDROID_ORIENT_PORTRAIT:
         printf("Portrait\n");
         break;
@@ -242,6 +230,9 @@ void eMPL_send_data(unsigned char type, long *data)
 {
     char out[PACKET_LENGTH];
     int i;
+    //sausiliu
+    //return ;
+
     if (!data)
         return;
     memset(out, 0, PACKET_LENGTH);
@@ -250,8 +241,7 @@ void eMPL_send_data(unsigned char type, long *data)
     out[2] = type;
     out[21] = '\r';
     out[22] = '\n';
-    switch (type)
-    {
+    switch (type) {
     /* Two bytes per-element. */
     case PACKET_DATA_ROT:
         out[3] = (char)(data[0] >> 24);
@@ -307,8 +297,7 @@ void eMPL_send_data(unsigned char type, long *data)
     default:
         return;
     }
-    for (i=0; i<PACKET_LENGTH; i++)
-    {
+    for (i=0; i<PACKET_LENGTH; i++) {
         fputc(out[i], NULL);
     }
 }
@@ -317,6 +306,8 @@ void eMPL_send_quat(long *quat)
 {
     char out[PACKET_LENGTH];
     int i;
+    //sausiliu
+    //return;
     if (!quat)
         return;
     memset(out, 0, PACKET_LENGTH);
@@ -341,8 +332,7 @@ void eMPL_send_quat(long *quat)
     out[21] = '\r';
     out[22] = '\n';
 
-    for (i=0; i<PACKET_LENGTH; i++)
-    {
+    for (i=0; i<PACKET_LENGTH; i++) {
         fputc(out[i], NULL);
     }
 }
@@ -354,8 +344,7 @@ static void read_from_mpl(void)
     unsigned long timestamp;
     float float_data[3] = {0};
 
-    if (inv_get_sensor_type_quat(data, &accuracy, (inv_time_t*)&timestamp))
-    {
+    if (inv_get_sensor_type_quat(data, &accuracy, (inv_time_t*)&timestamp)) {
         /* Sends a quaternion packet to the PC. Since this is used by the Python
          * test app to visually represent a 3D quaternion, it's sent each time
          * the MPL has new data.
@@ -367,66 +356,55 @@ static void read_from_mpl(void)
             eMPL_send_data(PACKET_DATA_QUAT, data);
     }
 
-    if (hal.report & PRINT_ACCEL)
-    {
+    if (hal.report & PRINT_ACCEL) {
         if (inv_get_sensor_type_accel(data, &accuracy,
                                       (inv_time_t*)&timestamp))
             eMPL_send_data(PACKET_DATA_ACCEL, data);
     }
-    if (hal.report & PRINT_GYRO)
-    {
+    if (hal.report & PRINT_GYRO) {
         if (inv_get_sensor_type_gyro(data, &accuracy,
                                      (inv_time_t*)&timestamp))
             eMPL_send_data(PACKET_DATA_GYRO, data);
     }
 #ifdef COMPASS_ENABLED
-    if (hal.report & PRINT_COMPASS)
-    {
+    if (hal.report & PRINT_COMPASS) {
         if (inv_get_sensor_type_compass(data, &accuracy,
                                         (inv_time_t*)&timestamp))
             eMPL_send_data(PACKET_DATA_COMPASS, data);
     }
 #endif
-    if (hal.report & PRINT_EULER)
-    {
+    if (hal.report & PRINT_EULER) {
         if (inv_get_sensor_type_euler(data, &accuracy,
                                       (inv_time_t*)&timestamp))
             eMPL_send_data(PACKET_DATA_EULER, data);
     }
-    if (hal.report & PRINT_ROT_MAT)
-    {
+    if (hal.report & PRINT_ROT_MAT) {
         if (inv_get_sensor_type_rot_mat(data, &accuracy,
                                         (inv_time_t*)&timestamp))
             eMPL_send_data(PACKET_DATA_ROT, data);
     }
-    if (hal.report & PRINT_HEADING)
-    {
+    if (hal.report & PRINT_HEADING) {
         if (inv_get_sensor_type_heading(data, &accuracy,
                                         (inv_time_t*)&timestamp))
             eMPL_send_data(PACKET_DATA_HEADING, data);
     }
-    if (hal.report & PRINT_LINEAR_ACCEL)
-    {
-        if (inv_get_sensor_type_linear_acceleration(float_data, &accuracy, (inv_time_t*)&timestamp))
-        {
+    if (hal.report & PRINT_LINEAR_ACCEL) {
+        if (inv_get_sensor_type_linear_acceleration(float_data, &accuracy, (inv_time_t*)&timestamp)) {
             printf("Linear Accel: %7.5f %7.5f %7.5f\r\n",
                    float_data[0], float_data[1], float_data[2]);
         }
     }
-    if (hal.report & PRINT_GRAVITY_VECTOR)
-    {
+    if (hal.report & PRINT_GRAVITY_VECTOR) {
         if (inv_get_sensor_type_gravity(float_data, &accuracy,
                                         (inv_time_t*)&timestamp))
-            printf("Gravity Vector: %7.5f %7.5f %7.5f\r\n",
+            printf("Gravity Vector: %7.5f   %7.5f   %7.5f \n\r",
                    float_data[0], float_data[1], float_data[2]);
     }
-    if (hal.report & PRINT_PEDO)
-    {
+    if (hal.report & PRINT_PEDO) {
         unsigned long timestamp;
 //        get_tick_count(&timestamp);
         timestamp = xTaskGetTickCount();
-        if (timestamp > hal.next_pedo_ms)
-        {
+        if (timestamp > hal.next_pedo_ms) {
             hal.next_pedo_ms = timestamp + PEDO_READ_MS;
             unsigned long step_count, walk_time;
             dmp_get_pedometer_step_count(&step_count);
@@ -442,14 +420,10 @@ static void read_from_mpl(void)
      */
     msg = inv_get_message_level_0(INV_MSG_MOTION_EVENT |
                                   INV_MSG_NO_MOTION_EVENT);
-    if (msg)
-    {
-        if (msg & INV_MSG_MOTION_EVENT)
-        {
+    if (msg) {
+        if (msg & INV_MSG_MOTION_EVENT) {
             printf("Motion!\n");
-        }
-        else if (msg & INV_MSG_NO_MOTION_EVENT)
-        {
+        } else if (msg & INV_MSG_NO_MOTION_EVENT) {
             printf("No motion!\n");
         }
     }
@@ -482,8 +456,7 @@ static inline void run_self_test(void)
 #elif defined (MPU6050) || defined (MPU9150)
     result = mpu_run_self_test(gyro, accel);
 #endif
-    if (result == 0x7)
-    {
+    if (result == 0x7) {
         printf("Passed!\n");
         printf("accel: %7.4f %7.4f %7.4f\n",
                accel[0]/65536.f,
@@ -502,8 +475,7 @@ static inline void run_self_test(void)
          */
         unsigned char i = 0;
 
-        for(i = 0; i<3; i++)
-        {
+        for(i = 0; i<3; i++) {
             gyro[i] = (long)(gyro[i] * 32.8f); //convert to +-1000dps
             accel[i] *= 2048.f; //convert to +-16G
             accel[i] = accel[i] >> 16;
@@ -537,9 +509,7 @@ static inline void run_self_test(void)
         gyro[2] = (long) (gyro[2] * gyro_sens);
         inv_set_gyro_bias(gyro, 3);
 #endif
-    }
-    else
-    {
+    } else {
         if (!(result & 0x1))
             printf("Gyro failed.\n");
         if (!(result & 0x2))
@@ -552,8 +522,7 @@ static inline void run_self_test(void)
 
 static void handle_input(signed char c)
 {
-    switch (c)
-    {
+    switch (c) {
     /* These commands turn off individual sensors. */
     case '8':
         hal.sensors ^= ACCEL_ON;
@@ -656,56 +625,46 @@ static void handle_input(signed char c)
      * In this example, the compass rate is never changed.
      */
     case '1':
-        if (hal.dmp_on)
-        {
+        if (hal.dmp_on) {
             dmp_set_fifo_rate(10);
             inv_set_quat_sample_rate(100000L);
-        }
-        else
+        } else
             mpu_set_sample_rate(10);
         inv_set_gyro_sample_rate(100000L);
         inv_set_accel_sample_rate(100000L);
         break;
     case '2':
-        if (hal.dmp_on)
-        {
+        if (hal.dmp_on) {
             dmp_set_fifo_rate(20);
             inv_set_quat_sample_rate(50000L);
-        }
-        else
+        } else
             mpu_set_sample_rate(20);
         inv_set_gyro_sample_rate(50000L);
         inv_set_accel_sample_rate(50000L);
         break;
     case '3':
-        if (hal.dmp_on)
-        {
+        if (hal.dmp_on) {
             dmp_set_fifo_rate(40);
             inv_set_quat_sample_rate(25000L);
-        }
-        else
+        } else
             mpu_set_sample_rate(40);
         inv_set_gyro_sample_rate(25000L);
         inv_set_accel_sample_rate(25000L);
         break;
     case '4':
-        if (hal.dmp_on)
-        {
+        if (hal.dmp_on) {
             dmp_set_fifo_rate(50);
             inv_set_quat_sample_rate(20000L);
-        }
-        else
+        } else
             mpu_set_sample_rate(50);
         inv_set_gyro_sample_rate(20000L);
         inv_set_accel_sample_rate(20000L);
         break;
     case '5':
-        if (hal.dmp_on)
-        {
+        if (hal.dmp_on) {
             dmp_set_fifo_rate(100);
             inv_set_quat_sample_rate(10000L);
-        }
-        else
+        } else
             mpu_set_sample_rate(100);
         inv_set_gyro_sample_rate(10000L);
         inv_set_accel_sample_rate(10000L);
@@ -735,8 +694,7 @@ static void handle_input(signed char c)
             /* LP accel is not compatible with the DMP. */
             return;
         /* Toggle DMP. */
-        if (hal.dmp_on)
-        {
+        if (hal.dmp_on) {
             unsigned short dmp_rate;
             unsigned char mask = 0;
             hal.dmp_on = 0;
@@ -761,9 +719,7 @@ static void handle_input(signed char c)
             mpu_set_sample_rate(dmp_rate);
             inv_quaternion_sensor_was_turned_off();
             printf("DMP disabled.\n");
-        }
-        else
-        {
+        } else {
             unsigned short sample_rate;
             hal.dmp_on = 1;
             /* Preserve current FIFO rate. */
@@ -788,12 +744,10 @@ static void handle_input(signed char c)
          */
         hal.dmp_features ^= DMP_FEATURE_6X_LP_QUAT;
         dmp_enable_feature(hal.dmp_features);
-        if (!(hal.dmp_features & DMP_FEATURE_6X_LP_QUAT))
-        {
+        if (!(hal.dmp_features & DMP_FEATURE_6X_LP_QUAT)) {
             inv_quaternion_sensor_was_turned_off();
             printf("LP quaternion disabled.\n");
-        }
-        else
+        } else
             printf("LP quaternion enabled.\n");
         break;
     default:
@@ -822,19 +776,14 @@ void MPU9150Init( void )
     unsigned short compass_fsr;
 #endif
 
-    //initialize the i2c2
-    I2cMaster_Init();
-
     result = mpu_init(&int_param);
-    if (result)
-    {
+    if (result) {
         printf("Could not initialize gyro.\n\r");
-        //      MPL_LOGE("Could not initialize gyro.\n");
+        //MPL_LOGE("Could not initialize gyro.\n");
     }
 
     result = inv_init_mpl();
-    if (result)
-    {
+    if (result) {
         printf("Could not initialize MPL.\n");
     }
     /* Compute 6-axis and 9-axis quaternions. */
@@ -887,15 +836,12 @@ void MPU9150Init( void )
     inv_enable_eMPL_outputs();
 
     result = inv_start_mpl();
-    if (result == INV_ERROR_NOT_AUTHORIZED)
-    {
-        while (1)
-        {
+    if (result == INV_ERROR_NOT_AUTHORIZED) {
+        while (1) {
             printf("INV_ERROR_NOT_AUTHORIZED	Not authorized.\n");
         }
     }
-    if (result)
-    {
+    if (result) {
         printf("Could not start the MPL.\n");
     }
 
@@ -1009,7 +955,7 @@ void MPU9150Init( void )
         printf("dmp_load_motion_driver_firmware failed\n\r");
 
     if(dmp_set_orientation(
-                inv_orientation_matrix_to_scalar(gyro_pdata.orientation)))
+           inv_orientation_matrix_to_scalar(gyro_pdata.orientation)))
         printf("inv_orientation_matrix_to_scalar failed\n\r");
 
     if(dmp_register_tap_cb(tap_cb))
@@ -1041,9 +987,7 @@ void MPU9150Init( void )
     if(mpu_set_dmp_state(1))
         printf("mpu_set_dmp_state failed\n\r");
     hal.dmp_on = 1;
-
 }
-
 
 void vMPUTask(void * pvParameters)
 {
@@ -1057,27 +1001,22 @@ void vMPUTask(void * pvParameters)
     NVIC_InitTypeDef NVIC_InitStructure;
     EXTI_InitTypeDef EXTI_InitStructure;
 
-
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
+    //initialize the i2c2
+    I2cMaster_Init();
+
     MPU9150Init();
 
     /*enable EXTI1 PC0*/
-#if 0
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
-    GPIO_Init(GPIOC, &GPIO_InitStructure);
-#else
     GPIO_EXTILineConfig(GPIO_PortSourceGPIOC, GPIO_PinSource0);
-#endif
     EXTI_InitStructure.EXTI_Line = EXTI_Line0;
     EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
     EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
     EXTI_InitStructure.EXTI_LineCmd = ENABLE;
     EXTI_Init(&EXTI_InitStructure);
-
     NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQChannel;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = configLIBRARY_KERNEL_INTERRUPT_PRIORITY;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
@@ -1089,17 +1028,13 @@ void vMPUTask(void * pvParameters)
     //  get_tick_count(&timestamp);
     timestamp = xTaskGetTickCount();
 
-    for(;;)
-    {
+    for(;;) {
         unsigned long sensor_timestamp;
         int new_data = 0;
         GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_RESET);
         vTaskDelay(100);
-        GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_SET);
-        vTaskDelay(80);
 
-        if(xSerialGetChar(NULL, &cmd, 0) == pdTRUE)
-        {
+        if(xSerialGetChar(NULL, &cmd, 5) == pdTRUE) {
             /* A byte has been received via USART. See handle_input for a list of
             * valid commands.
             */
@@ -1113,8 +1048,7 @@ void vMPUTask(void * pvParameters)
          * make our compass reads timer-based instead.
          */
         if ((timestamp > hal.next_compass_ms) && !hal.lp_accel_mode &&
-                hal.new_gyro && (hal.sensors & COMPASS_ON))
-        {
+            hal.new_gyro && (hal.sensors & COMPASS_ON)) {
             hal.next_compass_ms = timestamp + COMPASS_READ_MS;
             new_compass = 1;
         }
@@ -1123,14 +1057,12 @@ void vMPUTask(void * pvParameters)
         /* Temperature data doesn't need to be read with every gyro sample.
         * Let's make them timer-based like the compass reads.
         */
-        if (timestamp > hal.next_temp_ms)
-        {
+        if (timestamp > hal.next_temp_ms) {
             hal.next_temp_ms = timestamp + TEMP_READ_MS;
             new_temp = 1;
         }
 
-        if (hal.motion_int_mode)
-        {
+        if (hal.motion_int_mode) {
             /* Enable motion interrupt. */
             mpu_lp_motion_interrupt(500, 1, 5);
             /* Notify the MPL that contiguity was broken. */
@@ -1139,18 +1071,16 @@ void vMPUTask(void * pvParameters)
             inv_compass_was_turned_off();
             inv_quaternion_sensor_was_turned_off();
             /* Wait for the MPU interrupt. */
-            while (!hal.new_gyro) {}
+            while (!hal.new_gyro) {}	
             /* Restore the previous sensor configuration. */
             mpu_lp_motion_interrupt(0, 0, 0);
             hal.motion_int_mode = 0;
         }
-        if (!hal.sensors || !hal.new_gyro)
-        {
+        if (!hal.sensors || !hal.new_gyro) {
             continue;
         }
 
-        if (hal.new_gyro && hal.lp_accel_mode)
-        {
+        if (hal.new_gyro && hal.lp_accel_mode) {
             short accel_short[3];
             long accel[3];
             mpu_get_accel_reg(accel_short, &sensor_timestamp);
@@ -1160,9 +1090,7 @@ void vMPUTask(void * pvParameters)
             inv_build_accel(accel, 0, sensor_timestamp);
             new_data = 1;
             hal.new_gyro = 0;
-        }
-        else if (hal.new_gyro && hal.dmp_on)
-        {
+        } else if (hal.new_gyro && hal.dmp_on) {
             short gyro[3], accel_short[3], sensors;
             unsigned char more;
             long accel[3], quat[4], temperature;
@@ -1181,35 +1109,29 @@ void vMPUTask(void * pvParameters)
             dmp_read_fifo(gyro, accel_short, quat, &sensor_timestamp, &sensors, &more);
             if (!more)
                 hal.new_gyro = 0;
-            if (sensors & INV_XYZ_GYRO)
-            {
+            if (sensors & INV_XYZ_GYRO) {
                 /* Push the new data to the MPL. */
                 inv_build_gyro(gyro, sensor_timestamp);
                 new_data = 1;
-                if (new_temp)
-                {
+                if (new_temp) {
                     new_temp = 0;
                     /* Temperature only used for gyro temp comp. */
                     mpu_get_temperature(&temperature, &sensor_timestamp);
                     inv_build_temp(temperature, sensor_timestamp);
                 }
             }
-            if (sensors & INV_XYZ_ACCEL)
-            {
+            if (sensors & INV_XYZ_ACCEL) {
                 accel[0] = (long)accel_short[0];
                 accel[1] = (long)accel_short[1];
                 accel[2] = (long)accel_short[2];
                 inv_build_accel(accel, 0, sensor_timestamp);
                 new_data = 1;
             }
-            if (sensors & INV_WXYZ_QUAT)
-            {
+            if (sensors & INV_WXYZ_QUAT) {
                 inv_build_quat(quat, 0, sensor_timestamp);
                 new_data = 1;
             }
-        }
-        else if (hal.new_gyro)
-        {
+        } else if (hal.new_gyro) {
             short gyro[3], accel_short[3];
             unsigned char sensors, more;
             long accel[3], temperature;
@@ -1227,21 +1149,18 @@ void vMPUTask(void * pvParameters)
                           &sensors, &more);
             if (more)
                 hal.new_gyro = 1;
-            if (sensors & INV_XYZ_GYRO)
-            {
+            if (sensors & INV_XYZ_GYRO) {
                 /* Push the new data to the MPL. */
                 inv_build_gyro(gyro, sensor_timestamp);
                 new_data = 1;
-                if (new_temp)
-                {
+                if (new_temp) {
                     new_temp = 0;
                     /* Temperature only used for gyro temp comp. */
                     mpu_get_temperature(&temperature, &sensor_timestamp);
                     inv_build_temp(temperature, sensor_timestamp);
                 }
             }
-            if (sensors & INV_XYZ_ACCEL)
-            {
+            if (sensors & INV_XYZ_ACCEL) {
                 accel[0] = (long)accel_short[0];
                 accel[1] = (long)accel_short[1];
                 accel[2] = (long)accel_short[2];
@@ -1250,16 +1169,14 @@ void vMPUTask(void * pvParameters)
             }
         }
 #ifdef COMPASS_ENABLED
-        if (new_compass)
-        {
+        if (new_compass) {
             short compass_short[3];
             long compass[3];
             new_compass = 0;
             /* For any MPU device with an AKM on the auxiliary I2C bus, the raw
              * magnetometer registers are copied to special gyro registers.
              */
-            if (!mpu_get_compass_reg(compass_short, &sensor_timestamp))
-            {
+            if (!mpu_get_compass_reg(compass_short, &sensor_timestamp)) {
                 compass[0] = (long)compass_short[0];
                 compass[1] = (long)compass_short[1];
                 compass[2] = (long)compass_short[2];
@@ -1273,8 +1190,7 @@ void vMPUTask(void * pvParameters)
             new_data = 1;
         }
 #endif
-        if (new_data)
-        {
+        if (new_data) {
             inv_execute_on_data();
             /* This function reads bias-compensated sensor data and sensor
              * fusion outputs from the MPL. The outputs are formatted as seen
@@ -1283,14 +1199,15 @@ void vMPUTask(void * pvParameters)
              */
             read_from_mpl();
         }
+        GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_SET);
+        vTaskDelay(200);
 
     }
 }
 
 void EXTI0_IRQHandler( void )
 {
-    if(EXTI_GetITStatus(EXTI_Line0) != RESET)
-    {
+    if(EXTI_GetITStatus(EXTI_Line0) != RESET) {
         gyro_data_ready_cb();
         EXTI_ClearITPendingBit(EXTI_Line0);
     }

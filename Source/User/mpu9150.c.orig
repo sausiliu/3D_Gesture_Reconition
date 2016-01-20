@@ -242,6 +242,9 @@ void eMPL_send_data(unsigned char type, long *data)
 {
     char out[PACKET_LENGTH];
     int i;
+    //sausiliu
+    //return ;
+
     if (!data)
         return;
     memset(out, 0, PACKET_LENGTH);
@@ -317,6 +320,8 @@ void eMPL_send_quat(long *quat)
 {
     char out[PACKET_LENGTH];
     int i;
+    //sausiliu
+    //return;
     if (!quat)
         return;
     memset(out, 0, PACKET_LENGTH);
@@ -417,7 +422,7 @@ static void read_from_mpl(void)
     {
         if (inv_get_sensor_type_gravity(float_data, &accuracy,
                                         (inv_time_t*)&timestamp))
-            printf("Gravity Vector: %7.5f %7.5f %7.5f\r\n",
+            printf("Gravity Vector: %7.5f   %7.5f   %7.5f \n\r",
                    float_data[0], float_data[1], float_data[2]);
     }
     if (hal.report & PRINT_PEDO)
@@ -597,7 +602,7 @@ static void handle_input(signed char c)
         hal.report ^= PRINT_QUAT;
         break;
     case 'h':
-        hal.report ^= PRINT_HEADING;
+        hal.report ^= PRINT_HEADING; 
         break;
     case 'i':
         hal.report ^= PRINT_LINEAR_ACCEL;
@@ -822,14 +827,11 @@ void MPU9150Init( void )
     unsigned short compass_fsr;
 #endif
 
-    //initialize the i2c2
-    I2cMaster_Init();
-
     result = mpu_init(&int_param);
     if (result)
     {
         printf("Could not initialize gyro.\n\r");
-        //      MPL_LOGE("Could not initialize gyro.\n");
+        //MPL_LOGE("Could not initialize gyro.\n");
     }
 
     result = inv_init_mpl();
@@ -1041,9 +1043,7 @@ void MPU9150Init( void )
     if(mpu_set_dmp_state(1))
         printf("mpu_set_dmp_state failed\n\r");
     hal.dmp_on = 1;
-
 }
-
 
 void vMPUTask(void * pvParameters)
 {
@@ -1055,35 +1055,31 @@ void vMPUTask(void * pvParameters)
 #endif
     GPIO_InitTypeDef GPIO_InitStructure;
     NVIC_InitTypeDef NVIC_InitStructure;
-		EXTI_InitTypeDef EXTI_InitStructure;
-	
-	
+    EXTI_InitTypeDef EXTI_InitStructure;
+
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
+	  //initialize the i2c2
+    I2cMaster_Init();
+	
     MPU9150Init();
 
     /*enable EXTI1 PC0*/
-	#if 0
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
-    GPIO_Init(GPIOC, &GPIO_InitStructure);
-		#else 
-		GPIO_EXTILineConfig(GPIO_PortSourceGPIOC, GPIO_PinSource0);
-		#endif
-		EXTI_InitStructure.EXTI_Line = EXTI_Line0;
-		EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-		EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
-		EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-		EXTI_Init(&EXTI_InitStructure);
-		
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOC, GPIO_PinSource0);
+
+    EXTI_InitStructure.EXTI_Line = EXTI_Line0;
+    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
+    EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+    EXTI_Init(&EXTI_InitStructure);
+
     NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQChannel;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = configLIBRARY_KERNEL_INTERRUPT_PRIORITY;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init( &NVIC_InitStructure);
-
 
     /* Compass reads are handled by scheduler. */
     //  get_tick_count(&timestamp);
@@ -1094,20 +1090,9 @@ void vMPUTask(void * pvParameters)
         unsigned long sensor_timestamp;
         int new_data = 0;
         GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_RESET);
-        vTaskDelay(10);
-        GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_SET);
-        vTaskDelay(10);
-#if 0
-        if (USART_GetITStatus(USART1, USART_IT_RXNE))
-        {
-            /* A byte has been received via USART. See handle_input for a list of
-             * valid commands.
-             */
-            USART_ClearITPendingBit(USART1, USART_IT_RXNE);
-            handle_input();
-        }
-#else
-        if(xSerialGetChar(NULL, &cmd, 0) == pdTRUE)
+        vTaskDelay(100);
+
+        if(xSerialGetChar(NULL, &cmd, 5) == pdTRUE)
         {
             /* A byte has been received via USART. See handle_input for a list of
             * valid commands.
@@ -1116,8 +1101,6 @@ void vMPUTask(void * pvParameters)
             printf("revived cmd: %c \n\r", cmd);
         }
 
-#endif
-//    get_tick_count(&timestamp);
         timestamp = xTaskGetTickCount();
 #ifdef COMPASS_ENABLED
         /* We're not using a data ready interrupt for the compass, so we'll
@@ -1294,17 +1277,19 @@ void vMPUTask(void * pvParameters)
              */
             read_from_mpl();
         }
+        GPIO_WriteBit(GPIOA, GPIO_Pin_5, Bit_SET);
+        vTaskDelay(200);
 
     }
 }
 
 void EXTI0_IRQHandler( void )
 {
-if(EXTI_GetITStatus(EXTI_Line0) != RESET)
-{
-	gyro_data_ready_cb();
-	EXTI_ClearITPendingBit(EXTI_Line0);
-}
+    if(EXTI_GetITStatus(EXTI_Line0) != RESET)
+    {
+        gyro_data_ready_cb();
+        EXTI_ClearITPendingBit(EXTI_Line0);
+    }
 }
 
 void vCreateMPUTask(void)

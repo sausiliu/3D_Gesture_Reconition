@@ -287,7 +287,7 @@ static void prvSetupHardware( void )
 
 int fputc( int ch, FILE *f )
 {
-    xSerialPutChar(NULL, ch, 0);
+    xSerialPutChar(NULL, ch, 10);
     return ch;
 }
 
