@@ -230,8 +230,6 @@ void eMPL_send_data(unsigned char type, long *data)
 {
     char out[PACKET_LENGTH];
     int i;
-    //sausiliu
-    //return ;
 
     if (!data)
         return;
@@ -306,8 +304,6 @@ void eMPL_send_quat(long *quat)
 {
     char out[PACKET_LENGTH];
     int i;
-    //sausiliu
-    //return;
     if (!quat)
         return;
     memset(out, 0, PACKET_LENGTH);
